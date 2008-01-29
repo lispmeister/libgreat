@@ -9,7 +9,7 @@
 #include "wrap.h"
 
 void *
-greap_wrap_resolve(const char *functionname)
+great_wrap_resolve(const char *functionname)
 {
 	void *f;
 
