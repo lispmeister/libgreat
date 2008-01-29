@@ -10,6 +10,6 @@ struct great_c89 great_c89;
 void
 _init(void) {
 	/* <stdlib.h> */
-	great_c89.malloc = wrap_resolve("malloc");
+	great_c89.malloc = great_wrap_resolve("malloc");
 }
 

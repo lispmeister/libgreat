@@ -23,7 +23,7 @@
  * If it fails to locate the symbol from RTLD_NEXT, it will abort().
  */
 void *
-wrap_resolve(const char *functionname);
+greap_wrap_resolve(const char *functionname);
 
 #endif
 
