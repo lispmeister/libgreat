@@ -1,6 +1,6 @@
 # $Id$
 
-TARGETS = wrap.o
+TARGETS = wrap.o random.o
 
 libshared.a: $(TARGETS)
 	ar r $@ $(TARGETS)
