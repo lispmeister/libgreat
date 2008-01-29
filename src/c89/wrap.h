@@ -10,6 +10,7 @@
 struct great_c89 {
 	/* <stdlib.h> */
 	void *(*malloc)(size_t size);
+	void *(*realloc)(void *ptr, size_t size);
 };
 
 extern struct great_c89 great_c89;

@@ -15,5 +15,11 @@
 int
 great_random_success(void);
 
+/*
+ * Randomly return a value in the range 0 to max - 1 inclusive.
+ */
+unsigned int
+great_random_choice(unsigned int range);
+
 #endif
 
