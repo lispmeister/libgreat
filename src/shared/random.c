@@ -81,8 +81,8 @@
  * if it wishes to do so. Conversely, our PRNG may be seeded without affecting
  * the application's.
  *
- * TODO Much of this code seems to assume that uint32_t >= 32-bit.
- * perhaps use uint32_t internally, instead.
+ * TODO the casts for constants to uint32_t are ugly. These are because 0x1UL
+ * style constants assume uint32_t is unsigned long, which is may not be.
  *
  * XXX This is not thread-safe (forthcoming).
  *
@@ -105,9 +105,9 @@
  */
 #define N 624
 #define M 397
-#define MATRIX_A 0x9908b0dfUL   /* constant vector a */
-#define UPPER_MASK 0x80000000UL /* most significant w-r bits */
-#define LOWER_MASK 0x7fffffffUL /* least significant r bits */
+#define MATRIX_A (uint32_t) 0x9908b0dfUL   /* constant vector a */
+#define UPPER_MASK (uint32_t) 0x80000000UL /* most significant w-r bits */
+#define LOWER_MASK (uint32_t) 0x7fffffffUL /* least significant r bits */
 
 /*
  * XXX these should be thread-local, or protected by mutex. This would be
@@ -116,22 +116,22 @@
  * exports.
  */
 static uint32_t mt[N];	/* the array for the state vector  */
-static int mti = N + 1;	/* mti == N + 1 means mt[N] is not initialized */
+static uint32_t mti = N + 1;	/* mti == N + 1 means mt[N] is not initialized */
 
 void
 great_random_seed(uint32_t seed)
 {
-	mt[0] = seed & 0xffffffffUL;
+	mt[0] = seed & (uint32_t) 0xffffffffUL;
 
 	for(mti = 1; mti < N; mti++) {
-		mt[mti] = (1812433253UL * (mt[mti - 1] ^ (mt[mti - 1] >> 30)) + mti);
+		mt[mti] = ((uint32_t) 1812433253UL * (mt[mti - 1] ^ (mt[mti - 1] >> 30)) + mti);
 
 		/*
 		 * See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier.
 		 * In the previous versions, MSBs of the seed affect
 		 * only MSBs of the array mt[].
 		 */
-		mt[mti] &= 0xffffffffUL;
+		mt[mti] &= (uint32_t) 0xffffffffUL;
 	}
 }
 
@@ -144,7 +144,7 @@ genrand(void)
 	uint32_t y;
 
 	/* mag01[x] = x * MATRIX_A  for x = 0,1 */
-	static uint32_t mag01[2] = { 0x0UL, MATRIX_A };	/* TODO const? */
+	static uint32_t mag01[2] = { 0, MATRIX_A };	/* TODO const? */
 
 	/* generate N words at one time */
 	if(mti >= N) {
@@ -156,7 +156,7 @@ genrand(void)
 		 */
 		if(mti == N + 1) {
 			/* TODO draw seed from the envrionment if present */
-			great_random_seed(5489UL);
+			great_random_seed(5489);
 		}
 
 		for(kk = 0; kk < N - M; kk++) {
@@ -179,8 +179,8 @@ genrand(void)
 
 	/* Tempering */
 	y ^= (y >> 11);
-	y ^= (y << 7) & 0x9d2c5680UL;
-	y ^= (y << 15) & 0xefc60000UL;
+	y ^= (y << 7) & (uint32_t) 0x9d2c5680UL;
+	y ^= (y << 15) & (uint32_t) 0xefc60000UL;
 	y ^= (y >> 18);
 
 	return y;
