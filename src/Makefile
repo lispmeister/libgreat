@@ -1,3 +1,5 @@
+# $Id$
+
 all:
 	cd shared && $(MAKE)
 	cd c89 && $(MAKE)
