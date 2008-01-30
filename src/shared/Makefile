@@ -11,7 +11,7 @@ clean:
 	rm -f $(TARGETS) *_test
 
 test: random_test
-	./random_test 5
+	GREAT_RANDOM_SEED=12345 ./random_test 5
 
 random_test: random_test.o random.o
 	$(CC) $(CFLAGS) -o $@ random_test.o random.o

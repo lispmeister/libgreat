@@ -41,7 +41,8 @@
 
 /*
  * Initialise the pseudo random number generator with a seed.
- * If not explicitly called, a constant seed will be used.
+ * If not explicitly called, an arbitary constant seed will be
+ * used (5489).
  */
 void
 great_random_seed(unsigned long seed);

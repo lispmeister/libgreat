@@ -41,6 +41,7 @@
 int main(int argc, char **argv) {
 	unsigned int range;
 	int i;
+	int r;
 
 	if(argc != 2) {
 		fputs("usage: random_test <number>\n", stderr);
@@ -48,14 +49,14 @@ int main(int argc, char **argv) {
 	}
 
 	range = atoi(argv[1]);
-	great_random_seed((unsigned long) time(NULL));
+	srand(time(NULL));
 
 	for(i = 0; i < 10; i++) {
-		printf("great_random_choice(%u): %u\n",
-			range, great_random_choice(range));
+		r = rand();
 
-		printf("great_random_success(%u): %s\n",
-			range, great_random_success() ? "true" : "false");
+		printf("%u: %u %s %u\n",
+			i, great_random_choice(range),
+			great_random_success() ? "true " : "false", r);
 	}
 
 	return EXIT_SUCCESS;

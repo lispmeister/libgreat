@@ -95,7 +95,9 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include <math.h>
+#include <limits.h>
 
 /* This value corresponds to the MT implementation */
 #define GREAT_RAND_MAX 0xffffffffUL
@@ -136,6 +138,40 @@ great_random_seed(uint32_t seed)
 }
 
 /*
+ * Draw the seed from the envrionment variable GREAT_RANDOM_SEED if present.
+ * Otherwise, an arbitary default (5489) is used.
+ */
+static uint32_t
+find_seed(void) {
+	char *s;
+	char *ep;
+	long l;
+
+	/* Arbitary default */
+	const uint32_t defaultseed = 5489;
+
+	s = getenv("GREAT_RANDOM_SEED");
+	if(!s) {
+		return defaultseed;
+	}
+
+	l = strtol(s, &ep, 10);
+
+	if(s[0] == '\0' || *ep != '\0') {
+		fprintf(stderr, "Invalid integer for GREAT_RANDOM_SEED: %s\n", s);
+		return defaultseed;
+	}
+
+	if((errno == ERANGE && (l == LONG_MAX || l == LONG_MIN))
+		|| (l > UINT32_MAX || l < 0)) {
+		fprintf(stderr, "Out of range for GREAT_RANDOM_SEED: %s\n", s);
+		return defaultseed;
+	}
+
+	return l;
+}
+
+/*
  * Generates a random number on the [0,0xffffffff]-interval.
  */
 static uint32_t
@@ -155,8 +191,7 @@ genrand(void)
 		 * seed is used.
 		 */
 		if(mti == N + 1) {
-			/* TODO draw seed from the envrionment if present */
-			great_random_seed(5489);
+			great_random_seed(find_seed());
 		}
 
 		for(kk = 0; kk < N - M; kk++) {
