@@ -34,8 +34,6 @@ malloc(size_t size)
 void *
 realloc(void *ptr, size_t size)
 {
-	void *p;
-
 	/* P? If ptr is a null pointer, the realloc function
 	 *    behaves like the malloc function for the specified size. */
 	if(ptr == NULL) {
@@ -94,5 +92,6 @@ realloc(void *ptr, size_t size)
 	}
 
 	/* NOTREACHED */
+	return NULL;
 }
 

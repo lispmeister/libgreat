@@ -16,7 +16,7 @@
 static int
 probability(double p)
 {
-	return (double)rand() <= (double)RAND_MAX * p;
+	return p < (double)rand() / RAND_MAX;
 }
 
 int
