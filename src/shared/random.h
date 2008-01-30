@@ -46,6 +46,13 @@ int
 great_random_success(void);
 
 /*
+ * Initialise the pseudo random number generator with a seed.
+ * If not explicitly called, a constant seed will be used.
+ */
+void
+great_random_seed(unsigned long seed);
+
+/*
  * Randomly return a value in the range 0 to max - 1 inclusive.
  */
 unsigned int

@@ -40,22 +40,23 @@
 
 int main(int argc, char **argv) {
 	unsigned int range;
+	int i;
 
 	if(argc != 2) {
 		fputs("usage: random_test <number>\n", stderr);
 		return EXIT_FAILURE;
 	}
 
-	/* XXX Remove once we provide a seed interface */
-	srand((unsigned int) time(NULL));
-
 	range = atoi(argv[1]);
+	great_random_seed((unsigned long) time(NULL));
 
-	printf("great_random_choice(%u): %u\n",
-		range, great_random_choice(range));
+	for(i = 0; i < 10; i++) {
+		printf("great_random_choice(%u): %u\n",
+			range, great_random_choice(range));
 
-	printf("great_random_success(%u): %s\n",
-		range, great_random_success() ? "true" : "false");
+		printf("great_random_success(%u): %s\n",
+			range, great_random_success() ? "true" : "false");
+	}
 
 	return EXIT_SUCCESS;
 }
