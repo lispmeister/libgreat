@@ -8,7 +8,7 @@ libshared.a: $(TARGETS)
 	ar r $@ $(TARGETS)
 
 clean:
-	rm -f $(TARGETS)
+	rm -f $(TARGETS) *_test
 
 test: random_test
 	./random_test 5
