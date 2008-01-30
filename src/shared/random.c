@@ -81,7 +81,7 @@
  * if it wishes to do so. Conversely, our PRNG may be seeded without affecting
  * the application's.
  *
- * TODO Much of this code seems to assume that unsigned long >= 32-bit.
+ * TODO Much of this code seems to assume that uint32_t >= 32-bit.
  * perhaps use uint32_t internally, instead.
  *
  * XXX This is not thread-safe (forthcoming).
@@ -89,7 +89,9 @@
  * $Id$
  */
 
+#include <stdbool.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
@@ -113,11 +115,11 @@
  * Therefore these can be passed into great_random_seed() as a struct random.h
  * exports.
  */
-static unsigned long mt[N];	/* the array for the state vector  */
+static uint32_t mt[N];	/* the array for the state vector  */
 static int mti = N + 1;	/* mti == N + 1 means mt[N] is not initialized */
 
 void
-great_random_seed(unsigned long seed)
+great_random_seed(uint32_t seed)
 {
 	mt[0] = seed & 0xffffffffUL;
 
@@ -136,13 +138,13 @@ great_random_seed(unsigned long seed)
 /*
  * Generates a random number on the [0,0xffffffff]-interval.
  */
-static unsigned long
+static uint32_t
 genrand(void)
 {
-	unsigned long y;
+	uint32_t y;
 
 	/* mag01[x] = x * MATRIX_A  for x = 0,1 */
-	static unsigned long mag01[2] = { 0x0UL, MATRIX_A };	/* TODO const? */
+	static uint32_t mag01[2] = { 0x0UL, MATRIX_A };	/* TODO const? */
 
 	/* generate N words at one time */
 	if(mti >= N) {
@@ -187,13 +189,13 @@ genrand(void)
 /*
  * Randomly return true with a probability of p.
  */
-static int
+static bool
 probability(double p)
 {
 	return p < (double) genrand() / GREAT_RAND_MAX;
 }
 
-int
+bool
 great_random_success(void) {
 	const char *s;
 	double d;
@@ -225,7 +227,7 @@ great_random_choice(unsigned int range) {
 	/* See comp.lang.c FAQ 13.16 */
 	unsigned int x = (GREAT_RAND_MAX) / range;
 	unsigned int y = x * range;
-	unsigned int r;
+	uint32_t r;
 
 	do {
 		r = genrand();

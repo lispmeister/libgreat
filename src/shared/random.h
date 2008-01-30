@@ -37,13 +37,7 @@
 #ifndef GREAT_SHARED_RANDOM_H
 #define GREAT_SHARED_RANDOM_H
 
-/*
- * Randomly return true with a probability given by the environment
- * variable GREAT_PROBABILITY. If this is not set, the probability
- * defaults to 0.5.
- */
-int
-great_random_success(void);
+#include <stdbool.h>
 
 /*
  * Initialise the pseudo random number generator with a seed.
@@ -51,6 +45,14 @@ great_random_success(void);
  */
 void
 great_random_seed(unsigned long seed);
+
+/*
+ * Randomly return true with a probability given by the environment
+ * variable GREAT_PROBABILITY. If this is not set, the probability
+ * defaults to 0.5.
+ */
+bool
+great_random_success(void);
 
 /*
  * Randomly return a value in the range 0 to max - 1 inclusive.
