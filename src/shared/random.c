@@ -72,14 +72,9 @@
  * http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
  *
  * We are providing our own PRNG here (rather than using the system's rand())
- * so that our APIs may wrap rand() (thus adjusting its behaviour to the
- * permissiable extremes) without affecting our internal descisions for
- * failure probability.
- *
- * Additionally, maintaining an isolated seed from libc's rand() means that
- * failure results may be reproduced independantly of an application re-seeding
- * if it wishes to do so. Conversely, our PRNG may be seeded without affecting
- * the application's.
+ * so that failure results may be reproduced independantly of an application
+ * re-seeding if it wishes to do so. Conversely, our PRNG may be seeded without
+ * affecting the application's.
  *
  * TODO the casts for constants to uint32_t are ugly. These are because 0x1UL
  * style constants assume uint32_t is unsigned long, which is may not be.
@@ -99,6 +94,8 @@
 #include <math.h>
 #include <limits.h>
 
+#include "random.h"
+
 /* This value corresponds to the MT implementation */
 #define GREAT_RAND_MAX 0xffffffffUL
 
@@ -114,32 +111,19 @@
 /*
  * XXX these should be thread-local, or protected by mutex. This would be
  * per API, since the knowledge of threads is external to random.c.
- * Therefore these can be passed into great_random_seed() as a struct random.h
- * exports.
+ * TODO what is the behaviour per-thread?
  */
-static uint32_t mt[N];	/* the array for the state vector  */
-static uint32_t mti = N + 1;	/* mti == N + 1 means mt[N] is not initialized */
+struct great_random_state {
+	uint32_t mt[N];	/* the array for the state vector  */
+	uint32_t mti;
+};
 
-void
-great_random_seed(uint32_t seed)
-{
-	mt[0] = seed & (uint32_t) 0xffffffffUL;
-
-	for(mti = 1; mti < N; mti++) {
-		mt[mti] = ((uint32_t) 1812433253UL * (mt[mti - 1] ^ (mt[mti - 1] >> 30)) + mti);
-
-		/*
-		 * See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier.
-		 * In the previous versions, MSBs of the seed affect
-		 * only MSBs of the array mt[].
-		 */
-		mt[mti] &= (uint32_t) 0xffffffffUL;
-	}
-}
+struct great_random_state global_state;
 
 /*
  * Draw the seed from the envrionment variable GREAT_RANDOM_SEED if present.
- * Otherwise, an arbitary default (5489) is used.
+ * Otherwise, an arbitary default (5489) is used. We do not need to conform
+ * to the srand() semantics of defaulting to 1, since this is not srand().
  */
 static uint32_t
 find_seed(void) {
@@ -171,11 +155,40 @@ find_seed(void) {
 	return l;
 }
 
+void
+great_random_init(struct great_random_state *state)
+{
+	if(!state) {
+		state = &global_state;
+	}
+
+	great_random_seed(state, find_seed());
+}
+
+void
+great_random_seed(struct great_random_state *state, uint32_t seed)
+{
+	state->mt[0] = seed & (uint32_t) 0xffffffffUL;
+
+	for(state->mti = 1; state->mti < N; state->mti++) {
+		state->mt[state->mti] = ((uint32_t) 1812433253UL
+			* (state->mt[state->mti - 1] ^ (state->mt[state->mti - 1] >> 30))
+			+ state->mti);
+
+		/*
+		 * See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier.
+		 * In the previous versions, MSBs of the seed affect
+		 * only MSBs of the array mt[].
+		 */
+		state->mt[state->mti] &= (uint32_t) 0xffffffffUL;
+	}
+}
+
 /*
  * Generates a random number on the [0,0xffffffff]-interval.
  */
 static uint32_t
-genrand(void)
+genrand(struct great_random_state *state)
 {
 	uint32_t y;
 
@@ -183,34 +196,26 @@ genrand(void)
 	static uint32_t mag01[2] = { 0, MATRIX_A };	/* TODO const? */
 
 	/* generate N words at one time */
-	if(mti >= N) {
+	if(state->mti >= N) {
 		int kk;
 
-		/*
-		 * If great_random_seed() has not been called, a default initial
-		 * seed is used.
-		 */
-		if(mti == N + 1) {
-			great_random_seed(find_seed());
-		}
-
 		for(kk = 0; kk < N - M; kk++) {
-			y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
-			mt[kk] = mt[kk + M] ^ (y >> 1) ^ mag01[y & 0x1UL];
+			y = (state->mt[kk] & UPPER_MASK) | (state->mt[kk + 1] & LOWER_MASK);
+			state->mt[kk] = state->mt[kk + M] ^ (y >> 1) ^ mag01[y & 0x1UL];
 		}
 
 		for( ; kk < N - 1; kk++) {
-			y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
-			mt[kk] = mt[kk + (M - N)] ^ (y >> 1) ^ mag01[y & 0x1UL];
+			y = (state->mt[kk] & UPPER_MASK) | (state->mt[kk + 1] & LOWER_MASK);
+			state->mt[kk] = state->mt[kk + (M - N)] ^ (y >> 1) ^ mag01[y & 0x1UL];
 		}
 
-		y = (mt[N - 1] & UPPER_MASK) | (mt[0] & LOWER_MASK);
-		mt[N - 1] = mt[M - 1] ^ (y >> 1) ^ mag01[y & 0x1UL];
+		y = (state->mt[N - 1] & UPPER_MASK) | (state->mt[0] & LOWER_MASK);
+		state->mt[N - 1] = state->mt[M - 1] ^ (y >> 1) ^ mag01[y & 0x1UL];
 
-		mti = 0;
+		state->mti = 0;
 	}
 
-	y = mt[mti++];
+	y = state->mt[state->mti++];
 
 	/* Tempering */
 	y ^= (y >> 11);
@@ -227,7 +232,7 @@ genrand(void)
 static bool
 probability(double p)
 {
-	return p < (double) genrand() / GREAT_RAND_MAX;
+	return p < (double) genrand(&global_state) / GREAT_RAND_MAX;
 }
 
 bool
@@ -265,7 +270,7 @@ great_random_choice(unsigned int range) {
 	uint32_t r;
 
 	do {
-		r = genrand();
+		r = genrand(&global_state);
 	} while(r >= y);
 
 	return r / x;

@@ -50,6 +50,7 @@ int main(int argc, char **argv) {
 
 	range = atoi(argv[1]);
 	srand(time(NULL));
+	great_random_init(NULL);
 
 	for(i = 0; i < 10; i++) {
 		r = rand();

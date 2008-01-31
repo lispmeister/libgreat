@@ -38,6 +38,23 @@
 #define GREAT_SHARED_RANDOM_H
 
 #include <stdbool.h>
+#include <stdint.h>
+
+/*
+ * The state maintained for the PRNG. This provides a mechanism for multiple
+ * simultaneously and isolated generators which do not interfere with each
+ * other's sequences.
+ */
+struct great_random_state;
+
+/*
+ * Initialise a PRNG state. This must be called before use.
+ * If the given state is NULL, the global state (used for
+ * great_random_success() and great_random_choice() (which is
+ * maintained privately for their convenience) is initialised.
+ */
+void
+great_random_init(struct great_random_state *state);
 
 /*
  * Initialise the pseudo random number generator with a seed.
@@ -45,7 +62,7 @@
  * used (5489).
  */
 void
-great_random_seed(unsigned long seed);
+great_random_seed(struct great_random_state *state, uint32_t seed);
 
 /*
  * Randomly return true with a probability given by the environment
