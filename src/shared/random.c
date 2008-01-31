@@ -101,22 +101,13 @@
 
 /*
  * MT Period parameters
+ * N corresponds to random.h's great_random_state.mt[]
  */
 #define N 624
 #define M 397
 #define MATRIX_A (uint32_t) 0x9908b0dfUL   /* constant vector a */
 #define UPPER_MASK (uint32_t) 0x80000000UL /* most significant w-r bits */
 #define LOWER_MASK (uint32_t) 0x7fffffffUL /* least significant r bits */
-
-/*
- * XXX these should be thread-local, or protected by mutex. This would be
- * per API, since the knowledge of threads is external to random.c.
- * TODO what is the behaviour per-thread?
- */
-struct great_random_state {
-	uint32_t mt[N];	/* the array for the state vector  */
-	uint32_t mti;
-};
 
 struct great_random_state global_state;
 
@@ -126,7 +117,8 @@ struct great_random_state global_state;
  * to the srand() semantics of defaulting to 1, since this is not srand().
  */
 static uint32_t
-find_seed(void) {
+find_seed(void)
+{
 	char *s;
 	char *ep;
 	long l;
@@ -159,10 +151,8 @@ void
 great_random_init(struct great_random_state *state)
 {
 	if(!state) {
-		state = &global_state;
+		great_random_seed(&global_state, find_seed());
 	}
-
-	great_random_seed(state, find_seed());
 }
 
 void
@@ -191,6 +181,10 @@ static uint32_t
 genrand(struct great_random_state *state)
 {
 	uint32_t y;
+
+	if(!state) {
+		state = &global_state;
+	}
 
 	/* mag01[x] = x * MATRIX_A  for x = 0,1 */
 	static uint32_t mag01[2] = { 0, MATRIX_A };	/* TODO const? */
@@ -230,13 +224,14 @@ genrand(struct great_random_state *state)
  * Randomly return true with a probability of p.
  */
 static bool
-probability(double p)
+probability(struct great_random_state *state, double p)
 {
-	return p < (double) genrand(&global_state) / GREAT_RAND_MAX;
+	return p < (double) genrand(state) / GREAT_RAND_MAX;
 }
 
 bool
-great_random_success(void) {
+great_random_bool(struct great_random_state *state)
+{
 	const char *s;
 	double d;
 	char *ep;
@@ -244,7 +239,7 @@ great_random_success(void) {
 	s = getenv("GREAT_PROBABILITY");
 	if(!s) {
 		/* default */
-		return probability(0.5);
+		return probability(state, 0.5);
 	}
 
 	d = strtod(s, &ep);
@@ -259,11 +254,12 @@ great_random_success(void) {
 
 	/* XXX test for underflow? */
 
-	return probability(d);
+	return probability(state, d);
 }
 
 unsigned int
-great_random_choice(unsigned int range) {
+great_random_choice(unsigned int range)
+{
 	/* See comp.lang.c FAQ 13.16 */
 	unsigned int x = (GREAT_RAND_MAX) / range;
 	unsigned int y = x * range;

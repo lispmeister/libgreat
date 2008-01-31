@@ -44,14 +44,35 @@
  * The state maintained for the PRNG. This provides a mechanism for multiple
  * simultaneously and isolated generators which do not interfere with each
  * other's sequences.
+ *
+ * Consider this struct's members private. It is not a forward declaration
+ * for convenience of automatic allocation only.
  */
-struct great_random_state;
+struct great_random_state {
+	/*
+	 * XXX these should be thread-local, or protected by mutex. This would be
+	 * per API, since the knowledge of threads is external to random.c.
+	 *
+	 * TODO what is the behaviour per-thread?
+	 */
+    uint32_t mt[624]; /* The state vector. See random.c:N */
+    uint32_t mti;
+};
+
+
+extern struct great_random_state global_state;
 
 /*
  * Initialise a PRNG state. This must be called before use.
  * If the given state is NULL, the global state (used for
  * great_random_success() and great_random_choice() (which is
  * maintained privately for their convenience) is initialised.
+ *
+ * If the global state is initialised (that is, state is NULL),
+ * it is also seeded. This is not true for other states. The
+ * seed for the global state is taken from the environment
+ * (given as GREAT_RANDOM_SEED if present), or an arbitary
+ * default (5489).
  */
 void
 great_random_init(struct great_random_state *state);
@@ -70,7 +91,7 @@ great_random_seed(struct great_random_state *state, uint32_t seed);
  * defaults to 0.5.
  */
 bool
-great_random_success(void);
+great_random_bool(struct great_random_state *state);
 
 /*
  * Randomly return a value in the range 0 to max - 1 inclusive.

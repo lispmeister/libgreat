@@ -52,7 +52,7 @@ void *
 malloc(size_t size)
 {
 	/* P? ...either a null pointer */
-	if(!great_random_success()) {
+	if(!great_random_bool(NULL)) {
 		return NULL;
 	}
 
@@ -88,7 +88,7 @@ realloc(void *ptr, size_t size)
 		}
 	}
 
-	if(!great_random_success()) {
+	if(!great_random_bool(NULL)) {
 		return NULL;
 	}
 
