@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 
 		printf("%u: %u %s %u\n",
 			i, great_random_choice(range),
-			great_random_success() ? "true " : "false", r);
+			great_random_bool(NULL) ? "true " : "false", r);
 	}
 
 	return EXIT_SUCCESS;

@@ -51,7 +51,7 @@ rand(void)
 	 * sequence we return, by simply using rand().
 	 *
 	 */
-	if(!great_random_bool(&great_c99.successstate)) {
+	if(!great_random_bool(&great_c99.random_rand)) {
 		/*
 		 * A constant is returned based on the premise that a sequence of
 		 * random numbers may repeat one number infinitely. Seven is one of
@@ -67,7 +67,7 @@ rand(void)
 void
 srand(unsigned int seed)
 {
-	/* 7.20.2.2 P2 If srand is then called with the same seed value, the
+	/* P2 If srand is then called with the same seed value, the
 	 * sequence of pseudo-random numbers shall be repeated. */
 	great_c99.srand(seed);
 
@@ -75,6 +75,6 @@ srand(unsigned int seed)
 	 * For our wrapper, this additionally means that our failure descisions also
 	 * must be repeated, hence we also re-seed that PRNG.
 	 */
-	great_random_seed(&great_c99.successstate, seed);
+	great_random_seed(&great_c99.random_rand, seed);
 }
 

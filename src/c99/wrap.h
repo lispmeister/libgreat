@@ -41,14 +41,14 @@
 
 struct great_c99 {
 	/*
-	 * state for success of our rand() wrapper.
+	 * PRNG state for success of our random wrappers.
 	 *
 	 * By maintaining this state separately from the global PRNG (used for
 	 * great_random_success() et al), we can, provide that this sequence is the
 	 * same for a given seed both with and without this wrapper. We provide that
 	 * by maintaining this state for our PRNG independant of its other state;
 	 */
-	struct great_random_state successstate;
+	struct great_random_state random_rand;	/* rand() state */
 
 	/* <stdlib.h> */
 	int (*rand)(void);

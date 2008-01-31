@@ -109,7 +109,7 @@
 #define UPPER_MASK (uint32_t) 0x80000000UL /* most significant w-r bits */
 #define LOWER_MASK (uint32_t) 0x7fffffffUL /* least significant r bits */
 
-struct great_random_state global_state;
+struct great_random_state great_random_failure;	/* global failure state */
 
 /*
  * Draw the seed from the envrionment variable GREAT_RANDOM_SEED if present.
@@ -151,7 +151,7 @@ void
 great_random_init(struct great_random_state *state)
 {
 	if(!state) {
-		great_random_seed(&global_state, find_seed());
+		great_random_seed(&great_random_failure, find_seed());
 	}
 }
 
@@ -183,7 +183,7 @@ genrand(struct great_random_state *state)
 	uint32_t y;
 
 	if(!state) {
-		state = &global_state;
+		state = &great_random_failure;
 	}
 
 	/* mag01[x] = x * MATRIX_A  for x = 0,1 */
@@ -266,7 +266,7 @@ great_random_choice(unsigned int range)
 	uint32_t r;
 
 	do {
-		r = genrand(&global_state);
+		r = genrand(&great_random_failure);
 	} while(r >= y);
 
 	return r / x;

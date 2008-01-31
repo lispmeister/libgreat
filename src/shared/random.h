@@ -59,20 +59,18 @@ struct great_random_state {
     uint32_t mti;
 };
 
-
-extern struct great_random_state global_state;
+extern struct great_random_state great_random_failure;	/* global failure state */
 
 /*
- * Initialise a PRNG state. This must be called before use.
- * If the given state is NULL, the global state (used for
- * great_random_success() and great_random_choice() (which is
- * maintained privately for their convenience) is initialised.
+ * Initialise a PRNG state. This must be called before use. If the given state
+ * is NULL, the global failure state (used for great_random_success() and
+ * great_random_choice() (which is maintained privately for their convenience)
+ * is initialised.
  *
- * If the global state is initialised (that is, state is NULL),
- * it is also seeded. This is not true for other states. The
- * seed for the global state is taken from the environment
- * (given as GREAT_RANDOM_SEED if present), or an arbitary
- * default (5489).
+ * If the global failure state is initialised (that is, state is NULL), it is
+ * also seeded. This is not true for other states. The seed for the global
+ * state is taken from the environment (given as GREAT_RANDOM_SEED if present),
+ * or an arbitary default (5489).
  */
 void
 great_random_init(struct great_random_state *state);
@@ -95,6 +93,7 @@ great_random_bool(struct great_random_state *state);
 
 /*
  * Randomly return a value in the range 0 to max - 1 inclusive.
+ * The PRNG state used is great_random_failure.
  */
 unsigned int
 great_random_choice(unsigned int range);

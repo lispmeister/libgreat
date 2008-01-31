@@ -44,13 +44,13 @@ _init(void) {
 	great_random_init(NULL);
 
 	/* <stdlib.h> */
-	great_random_init(&great_c99.successstate);
 	great_c99.rand = great_wrap_resolve("rand");
 	great_c99.srand = great_wrap_resolve("srand");
 
 	/* C99 7.20.2.2 P2 If rand is called before any calls to srand have been
 	 * made, the same sequence shall be generated as when srand is first called
 	 * with a seed value of 1. */
-	great_random_seed(&great_c99.successstate, 1);
+	great_random_init(&great_c99.random_rand);
+	great_random_seed(&great_c99.random_rand, 1);
 }
 
