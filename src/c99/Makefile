@@ -14,6 +14,6 @@ clean:
 rand_test: rand_test.o
 	$(CC) $(CFLAGS) -o $@ rand_test.o
 
-test: rand_test
+test: rand_test libgreat_c99.so
 	GREAT_PROBABILITY=1 LD_LIBRARY_PATH=. LD_PRELOAD=libgreat_c99.so ./rand_test
 
