@@ -29,45 +29,49 @@
  */
 
 /*
+ * C99 <stdio.h>
+ * 7.19.5 File access functions
+ *
  * $Id$
  */
 
-#ifndef GREAT_C99_WRAP_H
-#define GREAT_C99_WRAP_H
-
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include "../shared/random.h"
+#include "wrap.h"
 
-struct great_c99 {
-	/*
-	 * PRNG state for success of our random wrappers.
-	 *
-	 * By maintaining this state separately from the global PRNG (used for
-	 * great_random_success() et al), we can, provide that this sequence is the
-	 * same for a given seed both with and without this wrapper. We provide that
-	 * by maintaining this state for our PRNG independant of its other state;
-	 */
-	struct great_random_state random_rand;	/* rand() state */
+/*
+ * CLC FAQ 13.8
+ * Compare strings via pointers
+ */
+static int
+pstrcmp(const void *p1, const void *p2)
+{
+	return strcmp(* (char * const *) p1, * (char * const *) p2);
+}
 
-	/* stdio_fileaccess.c */
-	FILE *(*fopen)(const char * restrict filename, const char * restrict mode);
+/* C99 7.19.5.3 The fopen function */
+FILE *
+fopen(const char * restrict filename, const char * restrict mode)
+{
+	/* P3 The argument mode points to a string. If the string is one of the
+	 *    following ... otherwise the behaviour is undefined. */
+	char *modes[] = {
+		"r", "w", "a", "rb", "wb", "ab", "r+", "w+", "a+",
+		"r+b", "rb+", "w+b", "wb+", "a+b", "ab+"
+	};
 
-	/* stdlib_prng.c */
-	int (*rand)(void);
-	void (*srand)(unsigned int seed);
+	/* Sort for bsearch; we do not assume the execution character set */
+	qsort(modes, sizeof modes / sizeof *modes, sizeof *modes, pstrcmp);
 
-	/* stdlib_memory.c */
-	void (*free)(void *ptr);
-	void *(*malloc)(size_t size);
-	void *(*realloc)(void *ptr, size_t size);
-};
+	/* I'm passing &mode here just so I can re-use pstrcmp() */
+	if(!bsearch((void *) &mode, modes, sizeof modes / sizeof *modes,
+		sizeof *modes, pstrcmp)) {
+		/* UB */
+		abort();
+	}
 
-extern struct great_c99 great_c99;
-
-extern void
-_init(void);
-
-#endif
+	return great_c99.fopen(filename, mode);
+}
 

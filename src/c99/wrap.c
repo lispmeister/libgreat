@@ -52,6 +52,9 @@ _init(void) {
 	great_c99.malloc  = great_wrap_resolve("malloc");
 	great_c99.realloc = great_wrap_resolve("realloc");
 
+	/* stdio_fileaccess.c */
+	great_c99.fopen = great_wrap_resolve("fopen");
+
 	/* C99 7.20.2.2 P2 If rand is called before any calls to srand have been
 	 * made, the same sequence shall be generated as when srand is first called
 	 * with a seed value of 1. */

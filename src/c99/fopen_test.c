@@ -28,46 +28,26 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * $Id$
- */
-
-#ifndef GREAT_C99_WRAP_H
-#define GREAT_C99_WRAP_H
-
-#include <stdlib.h>
 #include <stdio.h>
 
-#include "../shared/random.h"
+int
+main(void)
+{
+	FILE *fp1;
+	FILE *fp2;
 
-struct great_c99 {
-	/*
-	 * PRNG state for success of our random wrappers.
-	 *
-	 * By maintaining this state separately from the global PRNG (used for
-	 * great_random_success() et al), we can, provide that this sequence is the
-	 * same for a given seed both with and without this wrapper. We provide that
-	 * by maintaining this state for our PRNG independant of its other state;
-	 */
-	struct great_random_state random_rand;	/* rand() state */
+	/* This is a white-box test; see stdio_fileaccess.c */
 
-	/* stdio_fileaccess.c */
-	FILE *(*fopen)(const char * restrict filename, const char * restrict mode);
+	fp1 = fopen("/x", "r");
+	if(fp1) {
+		fclose(fp1);
+	}
 
-	/* stdlib_prng.c */
-	int (*rand)(void);
-	void (*srand)(unsigned int seed);
+	fp2 = fopen("/x", "ab+");
+	if(fp2) {
+		fclose(fp2);
+	}
 
-	/* stdlib_memory.c */
-	void (*free)(void *ptr);
-	void *(*malloc)(size_t size);
-	void *(*realloc)(void *ptr, size_t size);
-};
-
-extern struct great_c99 great_c99;
-
-extern void
-_init(void);
-
-#endif
+	return !!fp1 | !!fp2;
+}
 
