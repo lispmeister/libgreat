@@ -38,7 +38,7 @@
 #include <stdlib.h>
 
 struct great_c89 {
-	/* <stdlib.h> */
+	/* stdlib_memory.c */
 	void *(*malloc)(size_t size);
 	void *(*realloc)(void *ptr, size_t size);
 };

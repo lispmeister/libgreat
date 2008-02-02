@@ -29,21 +29,53 @@
  */
 
 /*
+ * C99 <stdlib.h>
+ * 7.20.2 Pseudo-random sequence generation functions
+ *
  * $Id$
  */
 
+#include <stdlib.h>
+
 #include "wrap.h"
-#include "../shared/wrap.h"
 #include "../shared/random.h"
 
-struct great_c89 great_c89;
+/* C99 7.20.2.1 The rand function */
+int
+rand(void)
+{
+	/* P4 The rand function returns a pseudo-random integer */
+	/*
+	 * This wrapper has the extra caveat that our descision weather to fail or
+	 * not must also be repeatable by srand() (else the sequence would differ
+	 * given the same seed). Hence we make that descision part of the same
+	 * sequence we return, by simply using rand().
+	 *
+	 */
+	if(!great_random_bool(&great_c99.random_rand)) {
+		/*
+		 * A constant is returned based on the premise that a sequence of
+		 * random numbers may repeat one number infinitely. Seven is one of
+		 * my favorite numbers.
+		 */
+		return 7;
+	}
 
+	return great_c99.rand();
+}
+
+/* C99 7.20.2.2 The srand function */
 void
-_init(void) {
-	great_random_init(NULL);
+srand(unsigned int seed)
+{
+	/* P2 If srand is then called with the same seed value, the
+	 * sequence of pseudo-random numbers shall be repeated. */
+	great_c99.srand(seed);
 
-	/* stdlib_memory.c */
-	great_c89.malloc  = great_wrap_resolve("malloc");
-	great_c89.realloc = great_wrap_resolve("realloc");
+	/*
+	 * For our wrapper, this additionally means that our failure descisions also
+	 * must be repeated, hence we also re-seed that PRNG.
+	 */
+	great_random_seed(&great_c99.random_rand, seed);
 }
 

@@ -50,9 +50,13 @@ struct great_c99 {
 	 */
 	struct great_random_state random_rand;	/* rand() state */
 
-	/* <stdlib.h> */
+	/* stdlib_prng.c */
 	int (*rand)(void);
 	void (*srand)(unsigned int seed);
+
+	/* stdlib_memory.c */
+	void *(*malloc)(size_t size);
+	void *(*realloc)(void *ptr, size_t size);
 };
 
 extern struct great_c99 great_c99;

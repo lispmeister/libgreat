@@ -43,9 +43,13 @@ void
 _init(void) {
 	great_random_init(NULL);
 
-	/* <stdlib.h> */
-	great_c99.rand = great_wrap_resolve("rand");
-	great_c99.srand = great_wrap_resolve("srand");
+	/* stdlib_prng.c */
+	great_c99.rand    = great_wrap_resolve("rand");
+	great_c99.srand   = great_wrap_resolve("srand");
+
+	/* stdlib_memory.c */
+	great_c99.malloc  = great_wrap_resolve("malloc");
+	great_c99.realloc = great_wrap_resolve("realloc");
 
 	/* C99 7.20.2.2 P2 If rand is called before any calls to srand have been
 	 * made, the same sequence shall be generated as when srand is first called

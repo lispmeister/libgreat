@@ -30,6 +30,7 @@
 
 /*
  * C89 <stdlib.h>
+ * 4.10.3 Memory management functions
  *
  * $Id$
  *

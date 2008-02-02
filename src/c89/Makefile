@@ -2,7 +2,7 @@
 
 CFLAGS = -fPIC -std=c89 -Wall -Werror
 
-TARGETS = wrap.o stdlib.o
+TARGETS = wrap.o stdlib_memory.o
 
 libgreat_c89.so: $(TARGETS)
 	ld -o $@ -shared -o $@ $(TARGETS) -L../shared -lshared
