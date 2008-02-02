@@ -36,25 +36,103 @@
  */
 
 #include <stdlib.h>
+#include <assert.h>
+#include <string.h>
 
 #include "wrap.h"
 #include "../shared/random.h"
+
+/*
+ * Here we're after a valid pointer (that is, one which malloc may return) which
+ * points to an address that may not be read from or written to.
+ *
+ * C99 6.5.5 P8 If both the pointer operand and the result point ... one past
+ * the last element of the array object, the evaluation shall not produce an
+ * overflow.
+ */
+char *great_nothing = "" + 1;
+
+/* C99 7.20.3.2 The free function */
+void
+free(void *ptr) {
+	if(ptr == great_nothing) {
+		return;
+	}
+
+	great_c99.free(ptr);
+}
 
 /* C99 7.20.3.3 The malloc function */
 void *
 malloc(size_t size)
 {
-	/* TODO */
+	switch(great_random_choice(2u + (size == 0))) {
+	case 0:
+		/* P3 The malloc function returns either a null pointer... */
+		return NULL;
 
-	return great_c99.malloc(size);
+	case 1:
+		/* P3 ...or a pointer to the allocated space */
+		return great_c99.malloc(size);
+
+	case 2:
+		/* J.2 IDB: The amount of storage allocated by a successful call to
+		 * malloc when 0 bytes was requested */
+		assert(size == 0);
+		return great_nothing;
+
+	default:
+		assert(!"unrecognised great random choice");
+	}
+
+	/* NOTREACHED */
+	return NULL;
 }
 
 /* C99 7.20.3.4 The realloc function */
 void *
 realloc(void *ptr, size_t size)
 {
-	/* TODO */
+	/* P3 If ptr is a null pointer, the realloc function behaves like like
+	 *    malloc function for the specified size. */
+	if(ptr == NULL) {
+		return malloc(size);
+	}
 
-	return great_c99.realloc(ptr, size);
+	/* P4 The realloc function returns ... a null pointer */
+	if(!great_random_bool(NULL)) {
+		return NULL;
+	}
+
+	/* P4 The realloc function returns a pointer to the new object */
+	switch(great_random_choice(2)) {
+	case 0:
+		/* P4 which may have the same value as a pointer to the old object */
+		return great_c99.realloc(ptr, size);
+
+	case 1:
+		/* a different address */
+		{
+			void *p;
+
+			p = malloc(size);
+			if(!p) {
+				return NULL;
+			}
+
+			/* P2 The contents of the new object shall be the same as that of
+			 *    the old object, up to the lesser of the new and old sizes. */
+			memcpy(p, ptr, size);
+			free(ptr);
+
+			return p;
+		}
+
+	default:
+		assert(!"unrecognised great random choice");
+	}
+
+	/* NOTREACHED */
+	return NULL;
 }
 

@@ -55,6 +55,7 @@ struct great_c99 {
 	void (*srand)(unsigned int seed);
 
 	/* stdlib_memory.c */
+	void (*free)(void *ptr);
 	void *(*malloc)(size_t size);
 	void *(*realloc)(void *ptr, size_t size);
 };
