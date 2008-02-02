@@ -48,6 +48,7 @@ _init(void) {
 	great_c99.srand   = great_wrap_resolve("srand");
 
 	/* stdlib_memory.c */
+	great_c99.free = great_wrap_resolve("free");
 	great_c99.malloc  = great_wrap_resolve("malloc");
 	great_c99.realloc = great_wrap_resolve("realloc");
 
