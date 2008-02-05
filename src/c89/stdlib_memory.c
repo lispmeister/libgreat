@@ -48,6 +48,14 @@
 
 /* TODO paragraph numbers for P? */
 
+/*
+ * Here we're after a valid pointer (that is, one which malloc may return) which
+ * points to an address that may not be read from or written to.
+ *
+ * TODO reference C89
+ */
+char *great_nothing = "" + 1;
+
 /* C89 4.10.3.3 The malloc function */
 void *
 malloc(size_t size)
@@ -82,7 +90,7 @@ realloc(void *ptr, size_t size)
 			return NULL;
 
 		case 1:
-			return ptr;
+			return great_nothing;
 
 		default:
 			assert(!"unrecognised great random choice");
