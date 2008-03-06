@@ -97,12 +97,12 @@ realloc(void *ptr, size_t size)
 		}
 	}
 
+	/* P? The realloc function returns either a null pointer... */
 	if(!great_random_bool(NULL)) {
 		return NULL;
 	}
 
-	/* P? The realloc function returns either a null pointer or a pointer to
-	 *    the possibly moved allocated space. */
+	/* P? ...or a pointer to the possibly moved allocated space. */
 	switch(great_random_choice(2)) {
 	case 0:
 		/* possibly the same address */
