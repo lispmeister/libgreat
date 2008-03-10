@@ -4,15 +4,15 @@ CFLAGS = -fPIC -std=c89 -Wall -Werror
 
 TARGETS = wrap.o stdlib_memory.o
 
+all: libgreat_c89.so libgreat_c89.a
+
 libgreat_c89.so: $(TARGETS)
 	ld -o $@ -shared -o $@ $(TARGETS) -L../shared -lshared
 
+libgreat_c89.a: $(TARGETS)
+	ar r $@
+	ranlib $@
+
 clean:
 	rm -f $(TARGETS) libgreat_c89.so
-
-stdlib_test: stdlib_test.o
-	$(CC) $(CFLAGS) -o $@ stdlib_test.o
-
-test: stdlib_test libgreat_c89.so
-	GREAT_PROBABILITY=1 LD_LIBRARY_PATH=. LD_PRELOAD=libgreat_c89.so ./stdlib_test
 
