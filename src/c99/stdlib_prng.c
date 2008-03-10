@@ -39,11 +39,17 @@
 
 #include "wrap.h"
 #include "../shared/random.h"
+#include "../shared/subset.h"
 
 /* C99 7.20.2.1 The rand function */
 int
 rand(void)
 {
+	if (!great_subset("stdlib:prng:rand")
+	&& !great_subset("stdlib:prng:srand")) {
+		return great_c99.rand();
+	}
+
 	/* P4 The rand function returns a pseudo-random integer */
 	/*
 	 * This wrapper has the extra caveat that our descision weather to fail or
@@ -68,6 +74,12 @@ rand(void)
 void
 srand(unsigned int seed)
 {
+	if (!great_subset("stdlib:prng:rand")
+	&& !great_subset("stdlib:prng:srand")) {
+		great_c99.srand(seed);
+		return;
+	}
+
 	/* P2 If srand is then called with the same seed value, the
 	 * sequence of pseudo-random numbers shall be repeated. */
 	great_c99.srand(seed);

@@ -35,14 +35,14 @@
 #include "wrap.h"
 #include "../shared/wrap.h"
 #include "../shared/random.h"
+#include "../shared/subset.h"
 #include "stdlib.h"
 
 struct great_c99 great_c99;
 
+/* TODO provide static initialisation alternative */
 void
 _init(void) {
-	great_random_init(NULL);
-
 	/* stdlib_prng.c */
 	great_c99.rand    = great_wrap_resolve("rand");
 	great_c99.srand   = great_wrap_resolve("srand");
@@ -60,5 +60,8 @@ _init(void) {
 	 * with a seed value of 1. */
 	great_random_init(&great_c99.random_rand);
 	great_random_seed(&great_c99.random_rand, 1);
+
+	great_random_init(NULL);
+	great_subset_init();
 }
 

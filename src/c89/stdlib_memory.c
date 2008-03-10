@@ -45,6 +45,7 @@
 
 #include "wrap.h"
 #include "../shared/random.h"
+#include "../shared/subset.h"
 
 /* TODO paragraph numbers for P? */
 
@@ -56,10 +57,16 @@
  */
 char *great_nothing = "" + 1;
 
+/* XXX free() is missing */
+
 /* C89 4.10.3.3 The malloc function */
 void *
 malloc(size_t size)
 {
+	if (!great_subset("stdlib:memory:malloc")) {
+		return great_c89.malloc(size);
+	}
+
 	/* P? ...either a null pointer */
 	if(!great_random_bool(NULL)) {
 		return NULL;
@@ -73,6 +80,10 @@ malloc(size_t size)
 void *
 realloc(void *ptr, size_t size)
 {
+	if (!great_subset("stdlib:memory:realloc")) {
+		return great_c89.realloc(ptr, size);
+	}
+
 	/* P? If ptr is a null pointer, the realloc function
 	 *    behaves like the malloc function for the specified size. */
 	if(ptr == NULL) {
@@ -97,12 +108,12 @@ realloc(void *ptr, size_t size)
 		}
 	}
 
-	/* P? The realloc function returns either a null pointer... */
 	if(!great_random_bool(NULL)) {
 		return NULL;
 	}
 
-	/* P? ...or a pointer to the possibly moved allocated space. */
+	/* P? The realloc function returns either a null pointer or a pointer to
+	 *    the possibly moved allocated space. */
 	switch(great_random_choice(2)) {
 	case 0:
 		/* possibly the same address */

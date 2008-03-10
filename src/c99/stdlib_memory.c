@@ -41,6 +41,7 @@
 
 #include "wrap.h"
 #include "../shared/random.h"
+#include "../shared/subset.h"
 
 /*
  * Here we're after a valid pointer (that is, one which malloc may return) which
@@ -55,6 +56,13 @@ char *great_nothing = "" + 1;
 /* C99 7.20.3.2 The free function */
 void
 free(void *ptr) {
+	if (!great_subset("stdlib:memory:malloc")
+	&& !great_subset("stdlib:memory:realloc")
+	&& !great_subset("stdlib:memory:free")) {
+		great_c99.free(ptr);
+		return;
+    }
+
 	if(ptr == great_nothing) {
 		return;
 	}
@@ -66,6 +74,10 @@ free(void *ptr) {
 void *
 malloc(size_t size)
 {
+	if (!great_subset("stdlib:memory:malloc")) {
+		return great_c99.malloc(size);
+    }
+
 	switch(great_random_choice(2u + (size == 0))) {
 	case 0:
 		/* P3 The malloc function returns either a null pointer... */
@@ -78,6 +90,7 @@ malloc(size_t size)
 	case 2:
 		/* J.2 IDB: The amount of storage allocated by a successful call to
 		 * malloc when 0 bytes was requested */
+		/* XXX IDB: we could also return an arbitary amount of memory here */
 		assert(size == 0);
 		return great_nothing;
 
@@ -93,6 +106,10 @@ malloc(size_t size)
 void *
 realloc(void *ptr, size_t size)
 {
+	if (!great_subset("stdlib:memory:realloc")) {
+		return great_c99.realloc(ptr, size);
+    }
+
 	/* P3 If ptr is a null pointer, the realloc function behaves like like
 	 *    malloc function for the specified size. */
 	if(ptr == NULL) {

@@ -40,6 +40,7 @@
 #include <string.h>
 
 #include "wrap.h"
+#include "../shared/subset.h"
 
 /*
  * CLC FAQ 13.8
@@ -55,6 +56,10 @@ pstrcmp(const void *p1, const void *p2)
 FILE *
 fopen(const char * restrict filename, const char * restrict mode)
 {
+	if (!great_subset("stdio:fileaccess:fopen")) {
+		return great_c99.fopen(filename, mode);
+	}
+
 	/* P3 The argument mode points to a string. If the string is one of the
 	 *    following ... otherwise the behaviour is undefined. */
 	char *modes[] = {

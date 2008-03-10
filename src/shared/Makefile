@@ -2,7 +2,7 @@
 
 CFLAGS = -fPIC -std=c89 -Wall -Werror
 
-TARGETS = wrap.o random.o
+TARGETS = wrap.o random.o subset.o
 
 libshared.a: $(TARGETS)
 	ar r $@ $(TARGETS)

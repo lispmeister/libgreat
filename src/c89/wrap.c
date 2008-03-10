@@ -35,15 +35,18 @@
 #include "wrap.h"
 #include "../shared/wrap.h"
 #include "../shared/random.h"
+#include "../shared/subset.h"
 
 struct great_c89 great_c89;
 
+/* TODO provide static initialisation alternative */
 void
 _init(void) {
-	great_random_init(NULL);
-
 	/* stdlib_memory.c */
 	great_c89.malloc  = great_wrap_resolve("malloc");
 	great_c89.realloc = great_wrap_resolve("realloc");
+
+	great_random_init(NULL);
+	great_subset_init();
 }
 
