@@ -38,28 +38,28 @@ main(void)
 	size_t i;
 
 	for(i = 0; i < 5; i++) {
-		printf("%d\n", rand());
+		printf("%x\n", rand());
 	}
 
 	printf("\nsrand(1);\n");
 	srand(1);
 
 	for(i = 0; i < 5; i++) {
-		printf("%d\n", rand());
+		printf("%x\n", rand());
 	}
 
 	printf("\nsrand(58);\n");
 	srand(58);
 
 	for(i = 0; i < 5; i++) {
-		printf("%d\n", rand());
+		printf("%x\n", rand());
 	}
 
 	printf("\nsrand(58);\n");
 	srand(58);
 
 	for(i = 0; i < 5; i++) {
-		printf("%d\n", rand());
+		printf("%x\n", rand());
 	}
 
 
