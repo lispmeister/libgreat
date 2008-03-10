@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
+#include <assert.h>
 
 #include "wrap.h"
 
@@ -44,6 +45,8 @@ void *
 great_wrap_resolve(const char *functionname)
 {
 	void *f;
+
+	assert(functionname);
 
 	/*
 	 * POSIX guarentees that a function pointer is expressable by void *.
