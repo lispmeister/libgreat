@@ -239,6 +239,10 @@ great_log(enum great_log_level level, const char *facility, const char *fmt, ...
 	case GREAT_LOG_ERROR:
 		write(fd, "ERROR: ", strlen("ERROR: "));
 		break;
+
+	case GREAT_LOG_UNDEFINED:
+		write(fd, "UNDEFINED: ", strlen("UNDEFINED: "));
+		break;
 	}
 
 	va_start(ap, fmt);
