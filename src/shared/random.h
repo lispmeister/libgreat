@@ -63,7 +63,7 @@ extern struct great_random_state great_random_failure;	/* global failure state *
 
 /*
  * Initialise a PRNG state. This must be called before use. If the given state
- * is NULL, the global failure state (used for great_random_success() and
+ * is NULL, the global failure state (used for great_random_bool() and
  * great_random_choice() (which is maintained privately for their convenience)
  * is initialised.
  *
