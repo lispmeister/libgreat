@@ -216,6 +216,8 @@ great_log(enum great_log_level level, const char *name, const char *fmt, ...)
 	write(fd, " ", 1);
 	write(fd, libname, strlen(libname));
 	write(fd, " ", 1);
+	write(fd, name, strlen(name));
+	write(fd, " ", 1);
 
 	switch (level) {
 	case GREAT_LOG_INFO:
