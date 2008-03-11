@@ -204,11 +204,11 @@ great_log_fini(void)
 }
 
 void
-great_log(enum great_log_level level, const char *name, const char *fmt, ...)
+great_log(enum great_log_level level, const char *facility, const char *fmt, ...)
 {
 	va_list ap;
 
-	assert(name);
+	assert(facility);
 	assert(fmt);
 	assert(libname);
 
@@ -216,7 +216,7 @@ great_log(enum great_log_level level, const char *name, const char *fmt, ...)
 	write(fd, " ", 1);
 	write(fd, libname, strlen(libname));
 	write(fd, " ", 1);
-	write(fd, name, strlen(name));
+	write(fd, facility, strlen(facility));
 	write(fd, " ", 1);
 
 	switch (level) {

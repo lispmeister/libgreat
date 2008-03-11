@@ -85,7 +85,7 @@ great_log_fini(void);
  * This is a formatted logging string in the style of printf. This is intended
  * for internal use only, and hence assert()s on various error conditions.
  *
- * Logs are formatted as "timestamp name level: msg", where the timestamp
+ * Logs are formatted as "timestamp facility level: msg", where the timestamp
  * is given by asctime().
  *
  * The file written to is set by $GREAT_LOG; see great_log_init() for details.
@@ -108,7 +108,7 @@ great_log_fini(void);
  * No conversion specifiers, lengths, widths, precisions or flags are provided.
  */
 void
-great_log(enum great_log_level level, const char *name, const char *fmt, ...);
+great_log(enum great_log_level level, const char *facility, const char *fmt, ...);
 
 /*
  * This is an analogue of perror(), provided for convenience. It serves to call
