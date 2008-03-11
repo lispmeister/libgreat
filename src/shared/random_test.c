@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 
 	range = atoi(argv[1]);
 	srand(time(NULL));
-	great_log_init("random_test");
+	great_log_init("random_test", NULL);
 	great_random_init(NULL);
 
 	for(i = 0; i < 10; i++) {
