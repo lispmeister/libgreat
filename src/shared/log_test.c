@@ -43,10 +43,12 @@ main(void)
 	int a[] = { 0, 1, 7, 9, 10, 11, 15, 16, 17, 123, 99972, -1, -2, -37, -937 };
 	int i;
 
-	great_log_init("logtest");
+	great_log_init("logtest", "LT");
 
 	errno = EPERM;
 	great_perror("x", "fopen");
+
+	great_ub("xyz", "1.2.3", "a %s c", "b");
 
 	great_log(GREAT_LOG_DEFAULT, "stdio:prng:rand", "abc %s", "def");
 	great_log(GREAT_LOG_DEBUG, "x", "%%");

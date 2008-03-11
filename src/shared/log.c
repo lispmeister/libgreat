@@ -51,6 +51,7 @@
 
 int fd;
 const char *libname;
+const char *stdname;
 
 static void
 timestamp(void)
@@ -158,17 +159,77 @@ vlogf(const char *fmt, va_list ap)
 	}
 }
 
+static void
+vlog(enum great_log_level level, const char *facility, const char *section, const char *fmt, va_list ap) 
+{
+	assert(facility);
+	assert(libname);
+
+	timestamp();
+	write(fd, " ", 1);
+	write(fd, libname, strlen(libname));
+	write(fd, " ", 1);
+	write(fd, facility, strlen(facility));
+	write(fd, " ", 1);
+	if (stdname && section) {
+		assert(strlen(stdname) > 0);
+		assert(strlen(section) > 0);
+
+		write(fd, "[", 1);
+		write(fd, stdname, strlen(stdname));
+		write(fd, " ", 1);
+		write(fd, section, strlen(section));
+		write(fd, "] ", 2);
+	}
+
+	switch (level) {
+	case GREAT_LOG_INFO:
+		write(fd, "INFO", strlen("INFO"));
+		break;
+
+	case GREAT_LOG_DEBUG:
+		write(fd, "DEBUG", strlen("DEBUG"));
+		break;
+
+	case GREAT_LOG_INTERCEPT:
+		write(fd, "INTERCEPT", strlen("INTERCEPT"));
+		break;
+
+	case GREAT_LOG_DEFAULT:
+		write(fd, "DEFAULT", strlen("DEFAULT"));
+		break;
+
+	case GREAT_LOG_ERROR:
+		write(fd, "ERROR", strlen("ERROR"));
+		break;
+
+	case GREAT_LOG_UNDEFINED:
+		write(fd, "UB", strlen("UB"));
+		break;
+	}
+
+	if (fmt) {
+		write(fd, ": ", 2);
+
+		vlogf(fmt, ap);
+	}
+
+	write(fd, "\n", 1);
+}
+
 void
-great_log_init(const char *name)
+great_log_init(const char *name, const char *standard)
 {
 	const char *log;
 	int f;
 
+	assert(name);
+
+	libname = name;
+	stdname = standard;
+
 	/* default to stderr */
 	fd = STDERR_FILENO;
-
-	assert(name);
-	libname = name;
 
 	log = getenv("GREAT_LOG");
 	if (!log) {
@@ -211,48 +272,9 @@ great_log(enum great_log_level level, const char *facility, const char *fmt, ...
 	assert(facility);
 	assert(libname);
 
-	timestamp();
-	write(fd, " ", 1);
-	write(fd, libname, strlen(libname));
-	write(fd, " ", 1);
-	write(fd, facility, strlen(facility));
-	write(fd, " ", 1);
-
-	switch (level) {
-	case GREAT_LOG_INFO:
-		write(fd, "INFO", strlen("INFO"));
-		break;
-
-	case GREAT_LOG_DEBUG:
-		write(fd, "DEBUG", strlen("DEBUG"));
-		break;
-
-	case GREAT_LOG_INTERCEPT:
-		write(fd, "INTERCEPT", strlen("INTERCEPT"));
-		break;
-
-	case GREAT_LOG_DEFAULT:
-		write(fd, "DEFAULT", strlen("DEFAULT"));
-		break;
-
-	case GREAT_LOG_ERROR:
-		write(fd, "ERROR", strlen("ERROR"));
-		break;
-
-	case GREAT_LOG_UNDEFINED:
-		write(fd, "UNDEFINED", strlen("UNDEFINED"));
-		break;
-	}
-
-	if (fmt) {
-		write(fd, ": ", 2);
-
-		va_start(ap, fmt);
-		vlogf(fmt, ap);
-		va_end(ap);
-	}
-
-	write(fd, "\n", 1);
+	va_start(ap, fmt);
+	vlog(level, facility, NULL, fmt, ap);
+	va_end(ap);
 }
 
 void
@@ -262,5 +284,18 @@ great_perror(const char *name, const char *string)
 	assert(string);
 
 	great_log(GREAT_LOG_ERROR, name, "%s: %s", string, strerror(errno));
+}
+
+void
+great_ub(const char *facility, const char *section, const char *fmt, ...)
+{
+	va_list ap;
+
+	assert(facility);
+	assert(section);
+
+	va_start(ap, fmt);
+	vlog(GREAT_LOG_UNDEFINED, facility, section, fmt, ap);
+	va_end(ap);
 }
 

@@ -78,7 +78,7 @@ enum great_log_level {
  * set or empty, this defaults to stderr.
  */
 void
-great_log_init(const char *name);
+great_log_init(const char *name, const char *standard);
 
 void
 great_log_fini(void);
@@ -87,8 +87,8 @@ great_log_fini(void);
  * This is a formatted logging string in the style of printf. This is intended
  * for internal use only, and hence assert()s on various error conditions.
  *
- * Logs are formatted as "timestamp facility level: msg", where the timestamp
- * is given by asctime().
+ * Logs are formatted as "timestamp library facility level: msg"
+ * The timestamp is given by asctime().
  *
  * The file written to is set by $GREAT_LOG; see great_log_init() for details.
  *
@@ -119,6 +119,23 @@ great_log(enum great_log_level level, const char *facility, const char *fmt, ...
  */
 void
 great_perror(const char *name, const char *string);
+
+/*
+ * Log undefined behaviour. It is required that a section is given, as
+ * reference to the definition of the undefined behaviour encountered.
+ *
+ * This is intended only for messages relating directly to standardised
+ * behaviour, hence the section argument is required.
+ *
+ * Logs are formatted as "timestamp library facility [std section] level: msg"
+
+ * [std section] is present only if a standard was specified by way of
+ * great_log_init(), and if a section within the standard is given.
+ *
+ * Otherwise, this function behaves as great_log().
+ */
+void
+great_ub(const char *facility, const char *section, const char *fmt, ...);
 
 #endif
 
