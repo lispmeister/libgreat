@@ -55,12 +55,14 @@
  * 	DEBUG		For development use
  *	INTERCEPT	Interceptions against default behaviours
  *	DEFAULT		Fallbacks to default behaviours
+ *	ERROR		User-facing errors conditions
  */
 enum great_log_level {
 	GREAT_LOG_INFO,
 	GREAT_LOG_DEBUG,
 	GREAT_LOG_INTERCEPT,
 	GREAT_LOG_DEFAULT,
+	GREAT_LOG_ERROR
 };
 
 /*

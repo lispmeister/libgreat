@@ -32,6 +32,9 @@
  * $Id$
  */
 
+#include <string.h>
+#include <errno.h>
+
 #include "log.h"
 
 int
@@ -44,6 +47,7 @@ main(void)
 
 	great_log(GREAT_LOG_DEFAULT, "stdio:prng:rand", "abc %s", "def");
 	great_log(GREAT_LOG_DEBUG, "x", "%%");
+	great_log(GREAT_LOG_ERROR, "y", "%s", strerror(ENOENT));
 	great_log(GREAT_LOG_INTERCEPT, "stdio:prng:rand", "%c%s%c%s", 'a', "bc", 'd', "efg");
 	for (i = 0; i < sizeof a / sizeof *a; i++) {
 		great_log(GREAT_LOG_INFO, "i", "%o %d %i %x %X",

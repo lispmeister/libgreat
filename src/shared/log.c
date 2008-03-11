@@ -230,6 +230,10 @@ great_log(enum great_log_level level, const char *name, const char *fmt, ...)
 	case GREAT_LOG_DEFAULT:
 		write(fd, "DEFAULT: ", strlen("DEFAULT: "));
 		break;
+
+	case GREAT_LOG_ERROR:
+		write(fd, "ERROR: ", strlen("ERROR: "));
+		break;
 	}
 
 	va_start(ap, fmt);
