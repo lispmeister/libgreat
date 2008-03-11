@@ -278,12 +278,12 @@ great_log(enum great_log_level level, const char *facility, const char *fmt, ...
 }
 
 void
-great_perror(const char *name, const char *string)
+great_perror(const char *facility, const char *string)
 {
-	assert(name);
+	assert(facility);
 	assert(string);
 
-	great_log(GREAT_LOG_ERROR, name, "%s: %s", string, strerror(errno));
+	great_log(GREAT_LOG_ERROR, facility, "%s: %s", string, strerror(errno));
 }
 
 void

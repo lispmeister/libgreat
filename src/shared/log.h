@@ -118,7 +118,7 @@ great_log(enum great_log_level level, const char *facility, const char *fmt, ...
  * great_log() for GREAT_LOG_ERROR, taking its message from strerror(errno).
  */
 void
-great_perror(const char *name, const char *string);
+great_perror(const char *facility, const char *string);
 
 /*
  * Log undefined behaviour. It is required that a section is given, as
