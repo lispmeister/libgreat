@@ -110,5 +110,12 @@ great_log_fini(void);
 void
 great_log(enum great_log_level level, const char *name, const char *fmt, ...);
 
+/*
+ * This is an analogue of perror(), provided for convenience. It serves to call
+ * great_log() for GREAT_LOG_ERROR, taking its message from strerror(errno).
+ */
+void
+great_perror(const char *name, const char *string);
+
 #endif
 

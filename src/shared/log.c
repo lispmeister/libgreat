@@ -43,6 +43,7 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 #include <assert.h>
 #include <stdarg.h>
 
@@ -207,6 +208,8 @@ great_log(enum great_log_level level, const char *name, const char *fmt, ...)
 {
 	va_list ap;
 
+	assert(name);
+	assert(fmt);
 	assert(libname);
 
 	timestamp();
@@ -241,5 +244,14 @@ great_log(enum great_log_level level, const char *name, const char *fmt, ...)
 	va_end(ap);
 
 	write(fd, "\n", 1);
+}
+
+void
+great_perror(const char *name, const char *string)
+{
+	assert(name);
+	assert(string);
+
+	great_log(GREAT_LOG_ERROR, name, "%s: %s", string, strerror(errno));
 }
 
