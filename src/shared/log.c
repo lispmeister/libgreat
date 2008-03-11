@@ -209,7 +209,6 @@ great_log(enum great_log_level level, const char *facility, const char *fmt, ...
 	va_list ap;
 
 	assert(facility);
-	assert(fmt);
 	assert(libname);
 
 	timestamp();
@@ -221,33 +220,37 @@ great_log(enum great_log_level level, const char *facility, const char *fmt, ...
 
 	switch (level) {
 	case GREAT_LOG_INFO:
-		write(fd, "INFO: ", strlen("INFO: "));
+		write(fd, "INFO", strlen("INFO"));
 		break;
 
 	case GREAT_LOG_DEBUG:
-		write(fd, "DEBUG: ", strlen("DEBUG: "));
+		write(fd, "DEBUG", strlen("DEBUG"));
 		break;
 
 	case GREAT_LOG_INTERCEPT:
-		write(fd, "INTERCEPT: ", strlen("INTERCEPT: "));
+		write(fd, "INTERCEPT", strlen("INTERCEPT"));
 		break;
 
 	case GREAT_LOG_DEFAULT:
-		write(fd, "DEFAULT: ", strlen("DEFAULT: "));
+		write(fd, "DEFAULT", strlen("DEFAULT"));
 		break;
 
 	case GREAT_LOG_ERROR:
-		write(fd, "ERROR: ", strlen("ERROR: "));
+		write(fd, "ERROR", strlen("ERROR"));
 		break;
 
 	case GREAT_LOG_UNDEFINED:
-		write(fd, "UNDEFINED: ", strlen("UNDEFINED: "));
+		write(fd, "UNDEFINED", strlen("UNDEFINED"));
 		break;
 	}
 
-	va_start(ap, fmt);
-	vlogf(fmt, ap);
-	va_end(ap);
+	if (fmt) {
+		write(fd, ": ", 2);
+
+		va_start(ap, fmt);
+		vlogf(fmt, ap);
+		va_end(ap);
+	}
 
 	write(fd, "\n", 1);
 }

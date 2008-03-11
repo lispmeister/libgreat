@@ -95,7 +95,8 @@ great_log_fini(void);
  * Logging prefixes a timestamp of the time at which the message was generated,
  * and the name of the library as given to great_log_init().
  *
- * The formats provided are:
+ * fmt may optionally be NULL, if the other fields give all relevant
+ * information. The formats provided are:
  *
  *	%%		A literal %
  *	%s 		A string given by char * formatted byte-by-byte

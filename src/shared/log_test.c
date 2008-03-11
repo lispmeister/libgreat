@@ -50,7 +50,7 @@ main(void)
 
 	great_log(GREAT_LOG_DEFAULT, "stdio:prng:rand", "abc %s", "def");
 	great_log(GREAT_LOG_DEBUG, "x", "%%");
-	great_log(GREAT_LOG_UNDEFINED, "x", "%%");
+	great_log(GREAT_LOG_UNDEFINED, "x", NULL);
 	great_log(GREAT_LOG_ERROR, "y", "%s", strerror(ENOENT));
 	great_log(GREAT_LOG_INTERCEPT, "stdio:prng:rand", "%c%s%c%s", 'a', "bc", 'd', "efg");
 	for (i = 0; i < sizeof a / sizeof *a; i++) {
