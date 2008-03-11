@@ -37,6 +37,7 @@
 #include <time.h>
 
 #include "random.h"
+#include "log.h"
 
 int main(int argc, char **argv) {
 	unsigned int range;
@@ -50,6 +51,7 @@ int main(int argc, char **argv) {
 
 	range = atoi(argv[1]);
 	srand(time(NULL));
+	great_log_init("random_test");
 	great_random_init(NULL);
 
 	for(i = 0; i < 10; i++) {
@@ -59,6 +61,8 @@ int main(int argc, char **argv) {
 			i, great_random_choice(range),
 			great_random_bool(NULL) ? "true " : "false", r);
 	}
+
+	great_log_fini();
 
 	return EXIT_SUCCESS;
 }
