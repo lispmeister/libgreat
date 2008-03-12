@@ -88,13 +88,13 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stddef.h>
-#include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <math.h>
 #include <limits.h>
 
 #include "random.h"
+#include "log.h"
 
 /* This value corresponds to the MT implementation */
 #define GREAT_RAND_MAX 0xffffffffUL
@@ -128,21 +128,31 @@ find_seed(void)
 
 	s = getenv("GREAT_RANDOM_SEED");
 	if(!s) {
+		great_log(GREAT_LOG_INFO, "GREAT_RANDOM_SEED",
+			"Defaulting to %d", defaultseed);
+
 		return defaultseed;
 	}
 
 	l = strtol(s, &ep, 10);
 
 	if(s[0] == '\0' || *ep != '\0') {
-		fprintf(stderr, "Invalid integer for GREAT_RANDOM_SEED: %s\n", s);
+		great_log(GREAT_LOG_ERROR, "GREAT_RANDOM_SEED",
+			"Invalid integer: \"%s\"; disregarding\n", s);
+
 		return defaultseed;
 	}
 
 	if((errno == ERANGE && (l == LONG_MAX || l == LONG_MIN))
 		|| (l > UINT32_MAX || l < 0)) {
-		fprintf(stderr, "Out of range for GREAT_RANDOM_SEED: %s\n", s);
+		great_log(GREAT_LOG_ERROR, "GREAT_RANDOM_SEED",
+			"Out of range: \"%s\"; disregarding\n", s);
+
 		return defaultseed;
 	}
+
+	great_log(GREAT_LOG_INFO, "GREAT_RANDOM_SEED",
+		"Seeded as %s", s);
 
 	return l;
 }
@@ -234,25 +244,37 @@ great_random_bool(struct great_random_state *state)
 {
 	const char *s;
 	double d;
+	const double defaultp = 0.5;
 	char *ep;
 
 	s = getenv("GREAT_PROBABILITY");
 	if(!s) {
-		/* default */
-		return probability(state, 0.5);
+		great_log(GREAT_LOG_INFO, "GREAT_PROBABILITY",
+			"Defaulting to 0.5");
+
+		return probability(state, defaultp);
 	}
 
 	d = strtod(s, &ep);
 
-	if(ep - s != (ptrdiff_t)strlen(s)) {
-		fprintf(stderr, "Invalid double for GREAT_PROBABILITY: %s\n", s);
+	if(ep - s != (ptrdiff_t) strlen(s)) {
+		great_log(GREAT_LOG_ERROR, "GREAT_PROBABILITY",
+			"Invalid double: \"%s\"; disregarding", s);
+
+		return probability(state, defaultp);
 	}
 
 	if(d >= HUGE_VAL || d <= -HUGE_VAL) {
-		fprintf(stderr, "Overflow for GREAT_PROBABILITY: %s\n", s);
+		great_log(GREAT_LOG_ERROR, "GREAT_PROBABILITY",
+			"Overflow: \"%s\"; disregarding", s);
+
+		return probability(state, defaultp);
 	}
 
 	/* XXX test for underflow? */
+
+	great_log(GREAT_LOG_INFO, "GREAT_PROBABILITY",
+		"Interception probability set at %s", s);
 
 	return probability(state, d);
 }

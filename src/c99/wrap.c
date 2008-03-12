@@ -36,7 +36,7 @@
 #include "../shared/wrap.h"
 #include "../shared/random.h"
 #include "../shared/subset.h"
-#include "stdlib.h"
+#include "../shared/log.h"
 
 struct great_c99 great_c99;
 
@@ -61,6 +61,7 @@ _init(void) {
 	great_random_init(&great_c99.random_rand);
 	great_random_seed(&great_c99.random_rand, 1);
 
+	great_log_init("libgreat_c99", "C99");
 	great_random_init(NULL);
 	great_subset_init();
 }

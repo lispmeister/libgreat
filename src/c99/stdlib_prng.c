@@ -40,6 +40,7 @@
 #include "wrap.h"
 #include "../shared/random.h"
 #include "../shared/subset.h"
+#include "../shared/log.h"
 
 /* C99 7.20.2.1 The rand function */
 int
@@ -64,9 +65,11 @@ rand(void)
 		 * random numbers may repeat one number infinitely. Seven is one of
 		 * my favorite numbers.
 		 */
+		great_ib("stdlib:prng:realloc", "7.20.2.1 P4", "Returning constant");
 		return 7;
 	}
 
+	great_log(GREAT_LOG_DEFAULT, "stdlib:prng:rand", NULL);
 	return great_c99.rand();
 }
 
@@ -82,6 +85,7 @@ srand(unsigned int seed)
 
 	/* P2 If srand is then called with the same seed value, the
 	 * sequence of pseudo-random numbers shall be repeated. */
+	great_log(GREAT_LOG_DEFAULT, "stdlib:prng:srand", NULL);
 	great_c99.srand(seed);
 
 	/*

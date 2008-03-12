@@ -41,6 +41,7 @@
 
 #include "wrap.h"
 #include "../shared/subset.h"
+#include "../shared/log.h"
 
 /*
  * CLC FAQ 13.8
@@ -73,9 +74,14 @@ fopen(const char * restrict filename, const char * restrict mode)
 	/* I'm passing &mode here just so I can re-use pstrcmp() */
 	if(!bsearch((void *) &mode, modes, sizeof modes / sizeof *modes,
 		sizeof *modes, pstrcmp)) {
+		great_ub("stdio:fileaccess:fopen", "7.19.5.3 P3",
+			"Unrecognised mode: \"%s\"", mode);
+
 		/* UB */
 		abort();
 	}
+
+	great_log(GREAT_LOG_DEFAULT, "stdio:fileaccess:fopen", NULL);
 
 	return great_c99.fopen(filename, mode);
 }

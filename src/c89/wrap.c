@@ -36,6 +36,7 @@
 #include "../shared/wrap.h"
 #include "../shared/random.h"
 #include "../shared/subset.h"
+#include "../shared/log.h"
 
 struct great_c89 great_c89;
 
@@ -46,6 +47,7 @@ _init(void) {
 	great_c89.malloc  = great_wrap_resolve("malloc");
 	great_c89.realloc = great_wrap_resolve("realloc");
 
+	great_log_init("libgreat_c89", "C89");
 	great_random_init(NULL);
 	great_subset_init();
 }

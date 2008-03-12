@@ -39,10 +39,11 @@
 #include <regex.h>
 #include <ctype.h>
 #include <assert.h>
+#include <errno.h>
 #include <string.h>
-#include <unistd.h> /* XXX debugging only */
 
 #include "subset.h"
+#include "log.h"
 
 struct subset {
 	regex_t preg;
@@ -90,16 +91,18 @@ single(const char *rs)
 	if (e) {
 		char buf[128];
 
+		/* XXX this calls malloc. we ought to disable all subsets until _init() is complete */
 		regerror(e, &re, buf, sizeof buf);
-		/* TODO explain why we use write. make our own minimal printf in shared/, instead */
-		write(STDERR_FILENO, buf, sizeof buf);
-
+		great_log(GREAT_LOG_ERROR, "GREAT_SUBSETS",
+			"%s; disregarding /%s/", buf, rs);
 		regfree(&re);
 		return false;
 	}
 
-	new = malloc(sizeof *new);
+	errno = 0;
+	new = malloc(sizeof *new);	/* XXX these should be our callbacks instead */
 	if (!new) {
+		great_perror("GREAT_SUBSETS", "malloc");
 		regfree(&re);
 		return false;
 	}
@@ -108,6 +111,8 @@ single(const char *rs)
 	new->preg = re;
 	new->next = subsets;
 	subsets = new;
+
+	great_log(GREAT_LOG_INFO, "GREAT_SUBSETS", "Registered subset: /%s/", rs);
 
 	return true;
 }
@@ -139,15 +144,15 @@ great_subset_init(void)
 		char *rel;
 		char d[] = { *restr, '\0' };
 
+		errno = 0;
 		rel = strdup(restr);
 		if (!rel) {
+			great_perror("GREAT_SUBSETS", "strdup");
 			return false;
 		}
 
-		strtok_r(rel, d, &lasts);
 		for (re = strtok_r(rel, d, &lasts); re; re = strtok_r(NULL, d, &lasts)) {
 			if (!single(re)) {
-				/* TODO set errno and such, for things like this */
 				free(rel);
 				return false;
 			}

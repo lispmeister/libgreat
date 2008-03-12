@@ -46,6 +46,7 @@
 #include "wrap.h"
 #include "../shared/random.h"
 #include "../shared/subset.h"
+#include "../shared/log.h"
 
 /* TODO paragraph numbers for P? */
 
@@ -69,10 +70,12 @@ malloc(size_t size)
 
 	/* P? ...either a null pointer */
 	if(!great_random_bool(NULL)) {
+		great_ib("stdio:memory:malloc", "4.10.3.3 P?", "Returning NULL");
 		return NULL;
 	}
 
 	/* P? ...or a pointer to the allocated space */
+	great_log(GREAT_LOG_DEFAULT, "stdio:memory:malloc", NULL);
 	return great_c89.malloc(size);
 }
 
@@ -87,6 +90,8 @@ realloc(void *ptr, size_t size)
 	/* P? If ptr is a null pointer, the realloc function
 	 *    behaves like the malloc function for the specified size. */
 	if(ptr == NULL) {
+		great_ib("stdio:memory:realloc", "4.10.3.4 P?",
+			"Returning malloc()");
 		return malloc(size);
 	}
 
@@ -98,9 +103,15 @@ realloc(void *ptr, size_t size)
 		/* C89 does not enforce that NULL is returned (I think...) */
 		switch(great_random_choice(2)) {
 		case 0:
+			great_ib("stdio:memory:realloc", "4.10.3.4 P?",
+				"Returning NULL");
+
 			return NULL;
 
 		case 1:
+			great_ib("stdio:memory:realloc", "4.10.3.4 P?",
+				"Returning great_nothing");
+
 			return great_nothing;
 
 		default:
@@ -108,24 +119,33 @@ realloc(void *ptr, size_t size)
 		}
 	}
 
-	if(!great_random_bool(NULL)) {
-		return NULL;
-	}
-
 	/* P? The realloc function returns either a null pointer or a pointer to
 	 *    the possibly moved allocated space. */
-	switch(great_random_choice(2)) {
+	switch(great_random_choice(3)) {
 	case 0:
+		great_ib("stdio:memory:realloc", "4.10.3.4 P?",
+			"Returning NULL");
+
+		return NULL;
+
+	case 1:
+		great_log(GREAT_LOG_DEFAULT, "stdio:memory:realloc", NULL);
+
 		/* possibly the same address */
 		return great_c89.realloc(ptr, size);
 
-	case 1:
+	case 2:
 		/* a different address */
 		{
 			void *p;
 
 			p = malloc(size);
 			if(!p) {
+				great_perror("stdlib:memory:realloc", "malloc");
+
+				great_ib("stdio:memory:realloc", "4.10.3.4 P?",
+					"Returning NULL");
+
 				return NULL;
 			}
 
@@ -133,6 +153,9 @@ realloc(void *ptr, size_t size)
 			 *    lesser of the new and old sizes. */
 			memcpy(p, ptr, size);
 			free(ptr);
+
+			great_ib("stdio:memory:realloc", "7.20.3.4 P2",
+				"Returning different address");
 
 			return p;
 		}

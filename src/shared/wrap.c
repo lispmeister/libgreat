@@ -34,12 +34,12 @@
  * $Id$
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
 #include <assert.h>
 
 #include "wrap.h"
+#include "log.h"
 
 void *
 great_wrap_resolve(const char *functionname)
@@ -53,7 +53,7 @@ great_wrap_resolve(const char *functionname)
 	 */
 	f = dlsym(RTLD_NEXT, functionname);
 	if(!f) {
-		perror(dlerror());
+		great_log(GREAT_LOG_ERROR, "wrap", "dlsym: %s", dlerror());
 		abort();
 	}
 
