@@ -65,7 +65,7 @@ rand(void)
 		 * random numbers may repeat one number infinitely. Seven is one of
 		 * my favorite numbers.
 		 */
-		great_ib("stdlib:prng:realloc", "7.20.2.1 P4", "Returning constant");
+		great_ib("stdlib:prng:rand", "7.20.2.1 P4", "Returning constant");
 		return 7;
 	}
 
