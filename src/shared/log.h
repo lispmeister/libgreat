@@ -137,5 +137,11 @@ great_perror(const char *facility, const char *string);
 void
 great_ub(const char *facility, const char *section, const char *fmt, ...);
 
+/*
+ * As for great_ub, but for intercepted behaviour.
+ */
+void
+great_ib(const char *facility, const char *section, const char *fmt, ...);
+
 #endif
 

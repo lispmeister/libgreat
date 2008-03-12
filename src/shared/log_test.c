@@ -49,6 +49,7 @@ main(void)
 	great_perror("x", "fopen");
 
 	great_ub("xyz", "1.2.3", "a %s c", "b");
+	great_ib("xyz", "4.5.6", "x %s z", "y");
 
 	great_log(GREAT_LOG_DEFAULT, "stdio:prng:rand", "abc %s", "def");
 	great_log(GREAT_LOG_DEBUG, "x", "%%");

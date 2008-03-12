@@ -192,7 +192,7 @@ vlog(enum great_log_level level, const char *facility, const char *section, cons
 		break;
 
 	case GREAT_LOG_INTERCEPT:
-		write(fd, "INTERCEPT", strlen("INTERCEPT"));
+		write(fd, "IB", strlen("IB"));
 		break;
 
 	case GREAT_LOG_DEFAULT:
@@ -296,6 +296,19 @@ great_ub(const char *facility, const char *section, const char *fmt, ...)
 
 	va_start(ap, fmt);
 	vlog(GREAT_LOG_UNDEFINED, facility, section, fmt, ap);
+	va_end(ap);
+}
+
+void
+great_ib(const char *facility, const char *section, const char *fmt, ...)
+{
+	va_list ap;
+
+	assert(facility);
+	assert(section);
+
+	va_start(ap, fmt);
+	vlog(GREAT_LOG_INTERCEPT, facility, section, fmt, ap);
 	va_end(ap);
 }
 
