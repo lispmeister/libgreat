@@ -47,8 +47,12 @@ _init(void) {
 	great_c89.malloc  = great_wrap_resolve("malloc");
 	great_c89.realloc = great_wrap_resolve("realloc");
 
+	great_subset_disable();
+
 	great_log_init("libgreat_c89", "C89");
 	great_random_init(NULL);
 	great_subset_init();
+
+	great_subset_enable();
 }
 

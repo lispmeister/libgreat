@@ -55,6 +55,8 @@ _init(void) {
 	/* stdio_fileaccess.c */
 	great_c99.fopen = great_wrap_resolve("fopen");
 
+	great_subset_disable();
+
 	/* C99 7.20.2.2 P2 If rand is called before any calls to srand have been
 	 * made, the same sequence shall be generated as when srand is first called
 	 * with a seed value of 1. */
@@ -64,5 +66,7 @@ _init(void) {
 	great_log_init("libgreat_c99", "C99");
 	great_random_init(NULL);
 	great_subset_init();
+
+	great_subset_enable();
 }
 

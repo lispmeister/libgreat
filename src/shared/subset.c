@@ -57,6 +57,12 @@ struct subset {
  */
 static struct subset *subsets;
 
+/*
+ * This is set true if all subsets are disabled; see great_subset_disable()
+ * and great_subset_enable().
+ */
+bool subsets_disabled;
+
 static bool
 cisdelim(int c)
 {
@@ -170,6 +176,10 @@ great_subset(const char *name)
 
 	assert(name);
 
+	if (subsets_disabled) {
+		return false;
+	}
+
 	/* TODO sanity check name */
 
 	for (subset = subsets; subset; subset = subset->next) {
@@ -179,5 +189,21 @@ great_subset(const char *name)
 	}
 
 	return false;
+}
+
+void
+great_subset_disable(void)
+{
+	assert(subsets_disabled == false);
+
+	subsets_disabled = true;
+}
+
+void
+great_subset_enable(void)
+{
+	assert(subsets_disabled == true);
+
+	subsets_disabled = false;
 }
 

@@ -106,5 +106,16 @@ bool great_subset_init(void);
  */
 bool great_subset(const char *name);
 
+/*
+ * Temporarily disable all subsets. In conjunction with great_subset_enable(),
+ * this is intended to provide a "wrap-free" region of code for internal use.
+ */
+void great_subset_disable(void);
+
+/*
+ * Reenable subssets previously disabled by great_subset_disable().
+ */
+void great_subset_enable(void);
+
 #endif
 
