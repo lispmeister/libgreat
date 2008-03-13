@@ -48,6 +48,7 @@
 #include <stdarg.h>
 
 #include "log.h"
+#include "subset.h"
 
 int fd;
 const char *libname;
@@ -165,6 +166,8 @@ vlog(enum great_log_level level, const char *facility, const char *section, cons
 	assert(facility);
 	assert(libname);
 
+	great_subset_disable();
+
 	timestamp();
 	write(fd, " ", 1);
 	write(fd, libname, strlen(libname));
@@ -215,6 +218,8 @@ vlog(enum great_log_level level, const char *facility, const char *section, cons
 	}
 
 	write(fd, "\n", 1);
+
+	great_subset_enable();
 }
 
 void
