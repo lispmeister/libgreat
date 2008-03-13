@@ -98,5 +98,11 @@ great_random_bool(struct great_random_state *state);
 unsigned int
 great_random_choice(unsigned int range);
 
+/*
+ * Generates a random long.
+ */
+long int
+great_random_long(struct great_random_state *state);
+
 #endif
 

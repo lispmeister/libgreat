@@ -92,6 +92,7 @@
 #include <errno.h>
 #include <math.h>
 #include <limits.h>
+#include <assert.h>
 
 #include "random.h"
 #include "log.h"
@@ -292,5 +293,13 @@ great_random_choice(unsigned int range)
 	} while(r >= y);
 
 	return r / x;
+}
+
+long int
+great_random_long(struct great_random_state *state)
+{
+	assert(sizeof(long) == sizeof(uint32_t));	/* XXX */
+
+	return (long) genrand(state);
 }
 
