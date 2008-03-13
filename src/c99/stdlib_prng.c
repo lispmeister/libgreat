@@ -69,6 +69,8 @@ rand(void)
 		return 7;
 	}
 
+	/* TODO duffing: invert this bool */
+
 	great_log(GREAT_LOG_DEFAULT, "stdlib:prng:rand", NULL);
 	return great_c99.rand();
 }
