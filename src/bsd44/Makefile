@@ -1,0 +1,18 @@
+# $Id$
+
+CFLAGS = -fPIC -std=c99 -Wall -Werror
+
+TARGETS = wrap.o string.o
+
+all: libgreat_bsd44.so libgreat_bsd44.a
+
+libgreat_bsd44.so: $(TARGETS)
+	ld -o $@ -shared -o $@ $(TARGETS) -L../shared -lshared
+
+libgreat_bsd44.a: $(TARGETS)
+	ar r $@
+	ranlib $@
+
+clean:
+	rm -f $(TARGETS) libgreat_bsd44.so
+
