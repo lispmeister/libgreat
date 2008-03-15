@@ -59,6 +59,7 @@ rand(void)
 	 * sequence we return, by simply using rand().
 	 *
 	 */
+	/* TODO duff */
 	if(!great_random_bool(&great_c99.random_rand)) {
 		/*
 		 * A constant is returned based on the premise that a sequence of
