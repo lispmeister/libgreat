@@ -1,12 +1,10 @@
 # $Id$
 
-PORT ?= posix
-
 all:
-	cd port/$(PORT) && $(MAKE)
+	cd port && $(MAKE)
 	cd shared && $(MAKE)
 
 clean:
-	cd port/$(PORT) && $(MAKE) clean
+	cd port && $(MAKE) clean
 	cd shared && $(MAKE) clean
 

@@ -1,18 +1,15 @@
 # $Id$
 
-CFLAGS = -fPIC -std=c89 -Wall -Werror
+MK = ../../mk
+SRC = ../../src
+
+LIB = libgreat_c89
 
 TARGETS = wrap.o stdlib_memory.o
 
-all: libgreat_c89.so libgreat_c89.a
+all: $(LIB).so $(LIB).a
 
-libgreat_c89.so: $(TARGETS)
-	ld -o $@ -shared -o $@ $(TARGETS) -L../../src/shared -lshared -L../../src/port -lport
-
-libgreat_c89.a: $(TARGETS)
-	ar r $@ $(TARGETS) ../../src/shared/libshared.a ../../src/port/libport.a
-	ranlib $@
-
-clean:
-	rm -f $(TARGETS) libgreat_c89.so
+include $(MK)/rules.mk
+include $(MK)/lib.mk
+include $(MK)/ar.mk
 

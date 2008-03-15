@@ -1,15 +1,14 @@
 # $Id$
 
-CFLAGS = -fPIC -std=c99 -Wall -Werror
+MK = ../../../mk
+SRC = ../../../src
+
+LIB = libport
 
 TARGETS = time.o
 
-all: ../libport.a
+all: $(LIB).a
 
-../libport.a: $(TARGETS)
-	ar r $@ $(TARGETS)
-	ranlib $@
-
-clean:
-	rm -f $(TARGETS) ../libport.a
+include $(MK)/rules.mk
+include $(MK)/ar.mk
 
