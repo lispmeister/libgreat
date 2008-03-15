@@ -40,9 +40,9 @@
 #include <string.h>
 
 #include "wrap.h"
-#include "../shared/random.h"
-#include "../shared/subset.h"
-#include "../shared/log.h"
+#include "../../src/shared/random.h"
+#include "../../src/shared/subset.h"
+#include "../../src/shared/log.h"
 
 /*
  * Here we're after a valid pointer (that is, one which malloc may return) which

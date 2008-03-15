@@ -38,9 +38,9 @@
 #include <stdlib.h>
 
 #include "wrap.h"
-#include "../shared/random.h"
-#include "../shared/subset.h"
-#include "../shared/log.h"
+#include "../../src/shared/random.h"
+#include "../../src/shared/subset.h"
+#include "../../src/shared/log.h"
 
 /* C99 7.20.2.1 The rand function */
 int

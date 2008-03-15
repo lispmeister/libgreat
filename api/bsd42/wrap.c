@@ -32,56 +32,27 @@
  * $Id$
  */
 
-#ifndef GREAT_C99_WRAP_H
-#define GREAT_C99_WRAP_H
+#include <stddef.h>
 
-#include <stdlib.h>
-#include <stdio.h>
+#include "wrap.h"
+#include "../../src/shared/wrap.h"
+#include "../../src/shared/random.h"
+#include "../../src/shared/subset.h"
+#include "../../src/shared/log.h"
 
-#include "../shared/random.h"
+struct great_bsd42 great_bsd42;
 
-struct great_c99 {
-	/*
-	 * PRNG state for success of our random wrappers.
-	 *
-	 * By maintaining this state separately from the global PRNG (used for
-	 * great_random_success() et al), we can, provide that this sequence is the
-	 * same for a given seed both with and without this wrapper. We provide that
-	 * by maintaining this state for our PRNG independant of its other state;
-	 */
-	struct great_random_state random_rand;	/* rand() state */
+void
+_init(void) {
+	/* sys_time.c */
+	great_bsd42.gettimeofday = great_wrap_resolve("gettimeofday");
 
-	/* ctype.c */
-	int (*isalnum)(int c);
-	int (*isalpha)(int c);
-	int (*isblank)(int c);
-	int (*iscntrl)(int c);
-	int (*isdigit)(int c);
-	int (*isgraph)(int c);
-	int (*islower)(int c);
-	int (*isprint)(int c);
-	int (*ispunct)(int c);
-	int (*isspace)(int c);
-	int (*isupper)(int c);
-	int (*isxdigit)(int c);
+	great_subset_disable();
 
-	/* stdio_fileaccess.c */
-	FILE *(*fopen)(const char * restrict filename, const char * restrict mode);
+	great_log_init("libgreat_bsd42", "BSD42");
+	great_random_init(NULL);
+	great_subset_init();
 
-	/* stdlib_prng.c */
-	int (*rand)(void);
-	void (*srand)(unsigned int seed);
-
-	/* stdlib_memory.c */
-	void (*free)(void *ptr);
-	void *(*malloc)(size_t size);
-	void *(*realloc)(void *ptr, size_t size);
-};
-
-extern struct great_c99 great_c99;
-
-extern void
-_init(void);
-
-#endif
+	great_subset_enable();
+}
 

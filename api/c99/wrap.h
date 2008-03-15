@@ -29,46 +29,59 @@
  */
 
 /*
- * BSD 4.4 <string.h>
- *
  * $Id$
  */
 
-/* Required for strdup() on GNU systems */
-#define _GNU_SOURCE
+#ifndef GREAT_C99_WRAP_H
+#define GREAT_C99_WRAP_H
 
-#include <errno.h>
-#include <stddef.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-#include "wrap.h"
-#include "../shared/subset.h"
-#include "../shared/random.h"
-#include "../shared/log.h"
+#include "../../src/shared/random.h"
 
-char *
-strdup(const char *str)
-{
-	if (!great_subset("string:memory:strdup")) {
-		return great_bsd44.strdup(str);
-	}
-
-	if (!great_random_bool(NULL)) {
-		great_log(GREAT_LOG_DEFAULT, "string:memory:strdup", NULL);
-		return great_bsd44.strdup(str);
-	}
-
-	great_ib("string:memory:strdup", "strdup(3)", "Returning NULL");
-
+struct great_c99 {
 	/*
-	 * strdup(3): If insufficient memory is available, NULL is returned.
+	 * PRNG state for success of our random wrappers.
 	 *
-	 * strdup(3): The strdup() function may fail and set the external variable
-	 * errno for any of the errors specified for the library function malloc(3).
-	 *
-	 * malloc(3): If malloc() fails, a NULL pointer is returned, and the errno
-	 * variable is set to ENOMEM.
+	 * By maintaining this state separately from the global PRNG (used for
+	 * great_random_success() et al), we can, provide that this sequence is the
+	 * same for a given seed both with and without this wrapper. We provide that
+	 * by maintaining this state for our PRNG independant of its other state;
 	 */
-	errno = ENOMEM;
-	return NULL;
-}
+	struct great_random_state random_rand;	/* rand() state */
+
+	/* ctype.c */
+	int (*isalnum)(int c);
+	int (*isalpha)(int c);
+	int (*isblank)(int c);
+	int (*iscntrl)(int c);
+	int (*isdigit)(int c);
+	int (*isgraph)(int c);
+	int (*islower)(int c);
+	int (*isprint)(int c);
+	int (*ispunct)(int c);
+	int (*isspace)(int c);
+	int (*isupper)(int c);
+	int (*isxdigit)(int c);
+
+	/* stdio_fileaccess.c */
+	FILE *(*fopen)(const char * restrict filename, const char * restrict mode);
+
+	/* stdlib_prng.c */
+	int (*rand)(void);
+	void (*srand)(unsigned int seed);
+
+	/* stdlib_memory.c */
+	void (*free)(void *ptr);
+	void *(*malloc)(size_t size);
+	void *(*realloc)(void *ptr, size_t size);
+};
+
+extern struct great_c99 great_c99;
+
+extern void
+_init(void);
+
+#endif
 

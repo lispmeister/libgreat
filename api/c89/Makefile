@@ -7,10 +7,10 @@ TARGETS = wrap.o stdlib_memory.o
 all: libgreat_c89.so libgreat_c89.a
 
 libgreat_c89.so: $(TARGETS)
-	ld -o $@ -shared -o $@ $(TARGETS) -L../shared -lshared -L../port -lport
+	ld -o $@ -shared -o $@ $(TARGETS) -L../../src/shared -lshared -L../../src/port -lport
 
 libgreat_c89.a: $(TARGETS)
-	ar r $@ $(TARGETS) ../shared/libshared.a ../port/libport.a
+	ar r $@ $(TARGETS) ../../src/shared/libshared.a ../../src/port/libport.a
 	ranlib $@
 
 clean:

@@ -29,60 +29,30 @@
  */
 
 /*
- * C99 <stdio.h>
- * 7.19.5 File access functions
- *
  * $Id$
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stddef.h>
 
 #include "wrap.h"
-#include "../shared/subset.h"
-#include "../shared/log.h"
+#include "../../src/shared/wrap.h"
+#include "../../src/shared/random.h"
+#include "../../src/shared/subset.h"
+#include "../../src/shared/log.h"
 
-/*
- * CLC FAQ 13.8
- * Compare strings via pointers
- */
-static int
-pstrcmp(const void *p1, const void *p2)
-{
-	return strcmp(* (char * const *) p1, * (char * const *) p2);
-}
+struct great_bsd44 great_bsd44;
 
-/* C99 7.19.5.3 The fopen function */
-FILE *
-fopen(const char * restrict filename, const char * restrict mode)
-{
-	if (!great_subset("stdio:fileaccess:fopen")) {
-		return great_c99.fopen(filename, mode);
-	}
+void
+_init(void) {
+	/* string.c */
+	great_bsd44.strdup = great_wrap_resolve("strdup");
 
-	/* P3 The argument mode points to a string. If the string is one of the
-	 *    following ... otherwise the behaviour is undefined. */
-	char *modes[] = {
-		"r", "w", "a", "rb", "wb", "ab", "r+", "w+", "a+",
-		"r+b", "rb+", "w+b", "wb+", "a+b", "ab+"
-	};
+	great_subset_disable();
 
-	/* Sort for bsearch; we do not assume the execution character set */
-	qsort(modes, sizeof modes / sizeof *modes, sizeof *modes, pstrcmp);
+	great_log_init("libgreat_bsd44", "BSD44");
+	great_random_init(NULL);
+	great_subset_init();
 
-	/* I'm passing &mode here just so I can re-use pstrcmp() */
-	if(!bsearch((void *) &mode, modes, sizeof modes / sizeof *modes,
-		sizeof *modes, pstrcmp)) {
-		great_ub("stdio:fileaccess:fopen", "7.19.5.3 P3",
-			"Unrecognised mode: \"%s\"", mode);
-
-		/* UB */
-		abort();
-	}
-
-	great_log(GREAT_LOG_DEFAULT, "stdio:fileaccess:fopen", NULL);
-
-	return great_c99.fopen(filename, mode);
+	great_subset_enable();
 }
 

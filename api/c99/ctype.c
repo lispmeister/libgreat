@@ -40,9 +40,9 @@
 #include <assert.h>
 
 #include "wrap.h"
-#include "../shared/random.h"
-#include "../shared/subset.h"
-#include "../shared/log.h"
+#include "../../src/shared/random.h"
+#include "../../src/shared/subset.h"
+#include "../../src/shared/log.h"
 
 static void
 checkrange(int c)

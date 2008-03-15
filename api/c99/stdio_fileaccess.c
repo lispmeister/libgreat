@@ -29,47 +29,60 @@
  */
 
 /*
- * BSD 4.2 <sys/time.h>
+ * C99 <stdio.h>
+ * 7.19.5 File access functions
  *
  * $Id$
  */
 
-#include <stddef.h>
-#include <sys/time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "wrap.h"
-#include "../shared/subset.h"
-#include "../shared/random.h"
-#include "../shared/log.h"
+#include "../../src/shared/subset.h"
+#include "../../src/shared/log.h"
 
-int
-gettimeofday(struct timeval * restrict tp, void * restrict tzp)
+/*
+ * CLC FAQ 13.8
+ * Compare strings via pointers
+ */
+static int
+pstrcmp(const void *p1, const void *p2)
 {
-	if (!great_subset("sys:time:gettimeofday")) {
-		return great_bsd42.gettimeofday(tp, tzp);
+	return strcmp(* (char * const *) p1, * (char * const *) p2);
+}
+
+/* C99 7.19.5.3 The fopen function */
+FILE *
+fopen(const char * restrict filename, const char * restrict mode)
+{
+	if (!great_subset("stdio:fileaccess:fopen")) {
+		return great_c99.fopen(filename, mode);
 	}
 
-	if (!great_random_bool(NULL)) {
-		great_log(GREAT_LOG_DEFAULT, "sys:time:gettimeofday", NULL);
-		return great_bsd42.gettimeofday(tp, tzp);
+	/* P3 The argument mode points to a string. If the string is one of the
+	 *    following ... otherwise the behaviour is undefined. */
+	char *modes[] = {
+		"r", "w", "a", "rb", "wb", "ab", "r+", "w+", "a+",
+		"r+b", "rb+", "w+b", "wb+", "a+b", "ab+"
+	};
+
+	/* Sort for bsearch; we do not assume the execution character set */
+	qsort(modes, sizeof modes / sizeof *modes, sizeof *modes, pstrcmp);
+
+	/* I'm passing &mode here just so I can re-use pstrcmp() */
+	if(!bsearch((void *) &mode, modes, sizeof modes / sizeof *modes,
+		sizeof *modes, pstrcmp)) {
+		great_ub("stdio:fileaccess:fopen", "7.19.5.3 P3",
+			"Unrecognised mode: \"%s\"", mode);
+
+		/* UB */
+		abort();
 	}
 
-	if (!tp) {
-		great_ib("sys:time:gettimeofday", "gettimeofday(3)", "Returning success");
+	great_log(GREAT_LOG_DEFAULT, "stdio:fileaccess:fopen", NULL);
 
-		return 0;
-	}
-
-	/*
-	 * gettimeofday(3): "The system's notion of the current UTC time ..."
-	 *
-	 * Our notion is that the time keeps changing randomly.
-	 */
-	tp->tv_sec = great_random_long(NULL);
-	tp->tv_usec = great_random_long(NULL);
-
-	great_ib("sys:time:gettimeofday", "gettimeofday(3)", "Returning random time");
-
-	return 0;
+	return great_c99.fopen(filename, mode);
 }
 

@@ -29,30 +29,47 @@
  */
 
 /*
+ * BSD 4.2 <sys/time.h>
+ *
  * $Id$
  */
 
+#include <stddef.h>
+#include <sys/time.h>
+
 #include "wrap.h"
-#include "../shared/wrap.h"
-#include "../shared/random.h"
-#include "../shared/subset.h"
-#include "../shared/log.h"
+#include "../../src/shared/subset.h"
+#include "../../src/shared/random.h"
+#include "../../src/shared/log.h"
 
-struct great_c89 great_c89;
+int
+gettimeofday(struct timeval * restrict tp, void * restrict tzp)
+{
+	if (!great_subset("sys:time:gettimeofday")) {
+		return great_bsd42.gettimeofday(tp, tzp);
+	}
 
-/* TODO provide static initialisation alternative */
-void
-_init(void) {
-	/* stdlib_memory.c */
-	great_c89.malloc  = great_wrap_resolve("malloc");
-	great_c89.realloc = great_wrap_resolve("realloc");
+	if (!great_random_bool(NULL)) {
+		great_log(GREAT_LOG_DEFAULT, "sys:time:gettimeofday", NULL);
+		return great_bsd42.gettimeofday(tp, tzp);
+	}
 
-	great_subset_disable();
+	if (!tp) {
+		great_ib("sys:time:gettimeofday", "gettimeofday(3)", "Returning success");
 
-	great_log_init("libgreat_c89", "C89");
-	great_random_init(NULL);
-	great_subset_init();
+		return 0;
+	}
 
-	great_subset_enable();
+	/*
+	 * gettimeofday(3): "The system's notion of the current UTC time ..."
+	 *
+	 * Our notion is that the time keeps changing randomly.
+	 */
+	tp->tv_sec = great_random_long(NULL);
+	tp->tv_usec = great_random_long(NULL);
+
+	great_ib("sys:time:gettimeofday", "gettimeofday(3)", "Returning random time");
+
+	return 0;
 }
 
