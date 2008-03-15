@@ -37,10 +37,6 @@
  * $Id$
  */
 
-/* Required for reentrant functions on GNU systems */
-#define _POSIX_SOURCE
-
-#include <time.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <ctype.h>
@@ -52,25 +48,11 @@
 
 #include "log.h"
 #include "subset.h"
+#include "../port/time.h"
 
 int fd;
 const char *libname;
 const char *stdname;
-
-static void
-timestamp(void)
-{
-	time_t t;
-	struct tm tm;
-	char buf[26];
-
-	t = time(NULL);
-	localtime_r(&t, &tm);
-	asctime_r(&tm, buf);
-
-	/* -2 to cut off the \n\0 */
-	write(fd, buf, sizeof buf - 2);
-}
 
 static void
 writeint(int i, unsigned int base, const char digits[])
@@ -166,12 +148,16 @@ vlogf(const char *fmt, va_list ap)
 static void
 vlog(enum great_log_level level, const char *facility, const char *section, const char *fmt, va_list ap) 
 {
+	char buf[26];
+
 	assert(facility);
 	assert(libname);
 
 	great_subset_disable();
 
-	timestamp();
+	great_timestamp(buf);
+    /* -2 to cut off the \n\0 */
+    write(fd, buf, sizeof buf - 2);
 	write(fd, " ", 1);
 	write(fd, libname, strlen(libname));
 	write(fd, " ", 1);

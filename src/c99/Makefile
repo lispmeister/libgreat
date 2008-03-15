@@ -7,10 +7,10 @@ TARGETS = wrap.o stdlib_prng.o stdlib_memory.o stdio_fileaccess.o ctype.o
 all: libgreat_c99.so libgreat_c99.a
 
 libgreat_c99.so: $(TARGETS)
-	ld -o $@ -shared -o $@ $(TARGETS) -L../shared -lshared
+	ld -o $@ -shared -o $@ $(TARGETS) -L../shared -lshared -L../port -lport
 
 libgreat_c99.a: $(TARGETS)
-	ar r $@ $(TARGETS)
+	ar r $@ $(TARGETS) ../shared/libshared.a ../port/libport.a
 	ranlib $@
 
 clean:

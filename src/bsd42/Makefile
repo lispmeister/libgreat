@@ -7,10 +7,10 @@ TARGETS = wrap.o sys_time.o
 all: libgreat_bsd42.so libgreat_bsd42.a
 
 libgreat_bsd42.so: $(TARGETS)
-	ld -o $@ -shared -o $@ $(TARGETS) -L../shared -lshared
+	ld -o $@ -shared -o $@ $(TARGETS) -L../shared -lshared -L../port -lport
 
 libgreat_bsd42.a: $(TARGETS)
-	ar r $@ $(TARGETS)
+	ar r $@ $(TARGETS) ../shared/libshared.a ../port/libport.a
 	ranlib $@
 
 clean:

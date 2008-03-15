@@ -34,9 +34,6 @@
  * $Id$
  */
 
-/* Required for strdup() on GNU systems */
-#define _GNU_SOURCE
-
 #include <stdbool.h>
 #include <stdlib.h>
 #include <regex.h>
@@ -47,6 +44,7 @@
 
 #include "subset.h"
 #include "log.h"
+#include "misc.h"
 
 struct subset {
 	regex_t preg;
@@ -156,9 +154,9 @@ great_subset_init(void)
 		char d[] = { *restr, '\0' };
 
 		errno = 0;
-		rel = strdup(restr);	/* XXX rework */
+		rel = great_strdup(restr);
 		if (!rel) {
-			great_perror("GREAT_SUBSETS", "strdup");
+			great_perror("GREAT_SUBSETS", "great_strdup");
 			return false;
 		}
 

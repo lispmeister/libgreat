@@ -7,10 +7,10 @@ TARGETS = wrap.o string.o
 all: libgreat_bsd44.so libgreat_bsd44.a
 
 libgreat_bsd44.so: $(TARGETS)
-	ld -o $@ -shared -o $@ $(TARGETS) -L../shared -lshared
+	ld -o $@ -shared -o $@ $(TARGETS) -L../shared -lshared -L../port -lport
 
 libgreat_bsd44.a: $(TARGETS)
-	ar r $@ $(TARGETS)
+	ar r $@ $(TARGETS) ../shared/libshared.a ../port/libport.a
 	ranlib $@
 
 clean:
