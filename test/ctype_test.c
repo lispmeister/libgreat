@@ -32,56 +32,52 @@
  * $Id$
  */
 
-#ifndef GREAT_C99_WRAP_H
-#define GREAT_C99_WRAP_H
-
-#include <stdlib.h>
+#include <ctype.h>
 #include <stdio.h>
 
-#include "../shared/random.h"
+static void
+testc(const char *s, const char *fn, int (*xis)(int c))
+{
+	printf("%8s", fn);
 
-struct great_c99 {
-	/*
-	 * PRNG state for success of our random wrappers.
-	 *
-	 * By maintaining this state separately from the global PRNG (used for
-	 * great_random_success() et al), we can, provide that this sequence is the
-	 * same for a given seed both with and without this wrapper. We provide that
-	 * by maintaining this state for our PRNG independant of its other state;
-	 */
-	struct great_random_state random_rand;	/* rand() state */
+	for ( ; *s; s++) {
+		printf("%4x", xis(*s));
+	}
 
-	/* ctype.c */
-	int (*isalnum)(int c);
-	int (*isalpha)(int c);
-	int (*isblank)(int c);
-	int (*iscntrl)(int c);
-	int (*isdigit)(int c);
-	int (*isgraph)(int c);
-	int (*islower)(int c);
-	int (*isprint)(int c);
-	int (*ispunct)(int c);
-	int (*isspace)(int c);
-	int (*isupper)(int c);
-	int (*isxdigit)(int c);
+	putc('\n', stdout);
+}
 
-	/* stdio_fileaccess.c */
-	FILE *(*fopen)(const char * restrict filename, const char * restrict mode);
+static void
+testh(const char *s)
+{
+	printf("%8s", "");
+	for ( ; *s; s++) {
+		printf(isprint((int) *s) ? "%4c" : "%#4x", *s);
+	}
+	putc('\n', stdout);
+}
 
-	/* stdlib_prng.c */
-	int (*rand)(void);
-	void (*srand)(unsigned int seed);
+int
+main(int argc, char *argv[])
+{
+	if (2 != argc) {
+		return 1;
+	}
 
-	/* stdlib_memory.c */
-	void (*free)(void *ptr);
-	void *(*malloc)(size_t size);
-	void *(*realloc)(void *ptr, size_t size);
-};
+	testh(argv[1]);
+	testc(argv[1], "isalnum", isalnum);
+	testc(argv[1], "isalpha", isalpha);
+	testc(argv[1], "isblank", isblank);
+	testc(argv[1], "iscntrl", iscntrl);
+	testc(argv[1], "isdigit", isdigit);
+	testc(argv[1], "isgraph", isgraph);
+	testc(argv[1], "islower", islower);
+	testc(argv[1], "isprint", isprint);
+	testc(argv[1], "ispunct", ispunct);
+	testc(argv[1], "isspace", isspace);
+	testc(argv[1], "isupper", isupper);
+	testc(argv[1], "isxdigit", isxdigit);
 
-extern struct great_c99 great_c99;
-
-extern void
-_init(void);
-
-#endif
+	return 0;
+}
 

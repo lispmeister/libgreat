@@ -2,7 +2,7 @@
 
 CFLAGS = -fPIC -std=c99 -Wall -Werror
 
-TARGETS = wrap.o stdlib_prng.o stdlib_memory.o stdio_fileaccess.o
+TARGETS = wrap.o stdlib_prng.o stdlib_memory.o stdio_fileaccess.o ctype.o
 
 all: libgreat_c99.so libgreat_c99.a
 

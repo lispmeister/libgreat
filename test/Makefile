@@ -16,21 +16,12 @@
 
 REMOVE = rm -f
 
-CFLAGS = -fPIC -std=c89 -Wall -Werror
+CFLAGS = -std=c89 -Wall -Werror
 
-TARGETS = malloc_test rand_test fopen_test
+TARGETS = malloc_test rand_test fopen_test ctype_test
 
 all: $(TARGETS)
 
 clean:
 	$(REMOVE) $(TARGETS)
-
-fopen_test: fopen_test.o
-	$(CC) $(CFLAGS) -o $@ fopen_test.o
-
-malloc_test: malloc_test.o
-	$(CC) $(CFLAGS) -o $@ malloc_test.o
-
-rand_test: rand_test.o
-	$(CC) $(CFLAGS) -o $@ rand_test.o
 
