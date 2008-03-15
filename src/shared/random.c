@@ -303,3 +303,11 @@ great_random_long(struct great_random_state *state)
 	return (long) genrand(state);
 }
 
+int
+great_random_int(void)
+{
+	assert(sizeof(int) == sizeof(uint32_t));
+
+	return (int) genrand(&great_random_failure);
+}
+

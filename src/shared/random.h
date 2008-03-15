@@ -104,5 +104,11 @@ great_random_choice(unsigned int range);
 long int
 great_random_long(struct great_random_state *state);
 
+/*
+ * Generates a random int.
+ */
+int
+great_random_int(void);
+
 #endif
 
