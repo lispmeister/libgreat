@@ -37,6 +37,9 @@
  * $Id$
  */
 
+/* Required for reentrant functions on GNU systems */
+#define _POSIX_SOURCE
+
 #include <time.h>
 #include <stdlib.h>
 #include <fcntl.h>

@@ -32,6 +32,9 @@
  * $Id$
  */
 
+/* Required for isblank() on GNU systems */
+#define _ISOC99_SOURCE
+
 #include <ctype.h>
 #include <stdio.h>
 

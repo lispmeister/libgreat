@@ -34,6 +34,9 @@
  * $Id$
  */
 
+/* Required for RTLD_NEXT on GNU systems */
+#define _GNU_SOURCE
+
 #include <stdlib.h>
 #include <dlfcn.h>
 #include <assert.h>

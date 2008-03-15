@@ -34,6 +34,9 @@
  * $Id$
  */
 
+/* Required for strdup() on GNU systems */
+#define _GNU_SOURCE
+
 #include <errno.h>
 #include <stddef.h>
 
