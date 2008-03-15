@@ -34,6 +34,7 @@
  * $Id$
  */
 
+#include <stddef.h>
 #include <sys/time.h>
 
 #include "wrap.h"

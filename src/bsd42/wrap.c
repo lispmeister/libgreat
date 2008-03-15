@@ -32,6 +32,8 @@
  * $Id$
  */
 
+#include <stddef.h>
+
 #include "wrap.h"
 #include "../shared/wrap.h"
 #include "../shared/random.h"
