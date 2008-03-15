@@ -6,7 +6,7 @@
 # both with and without the wrapper libraries present.
 #
 # Execute along the lines of:
-# GREAT_PROBABILITY=0.7 LD_PRELOAD=../src/c99/libgreat_c99.so \
+# GREAT_PROBABILITY=0.7 LD_PRELOAD=../api/c99/libgreat_c99.so \
 # 	./whatever_test <arguments>
 #
 # As these are small specific tests, output will probably only make sense by
@@ -14,14 +14,13 @@
 #
 # $Id$
 
-REMOVE = rm -f
+MK = ../mk
 
-CFLAGS = -std=c89 -Wall -Werror
+TESTS = malloc_test rand_test fopen_test ctype_test
+CLEAN += $(TESTS)
 
-TARGETS = malloc_test rand_test fopen_test ctype_test
+all: $(TESTS)
 
-all: $(TARGETS)
-
-clean:
-	$(REMOVE) $(TARGETS)
+include $(MK)/rules.mk
+include $(MK)/exec.mk
 

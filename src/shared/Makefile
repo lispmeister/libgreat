@@ -16,11 +16,14 @@ test: $(TESTS)
 	GREAT_LOG=- ./log_test
 
 random_test: random_test.o random.o log.o subset.o misc.o
-	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) random_test.o random.o log.o subset.o misc.o -lport
+	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) \
+		random_test.o random.o log.o subset.o misc.o -lport
 
 log_test: log_test.o log.o subset.o
-	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) log_test.o log.o subset.o misc.o -lport
+	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) \
+		log_test.o log.o subset.o misc.o -lport
 
 include $(MK)/rules.mk
 include $(MK)/ar.mk
+include $(MK)/exec.mk
 
