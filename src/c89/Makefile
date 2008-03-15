@@ -10,7 +10,7 @@ libgreat_c89.so: $(TARGETS)
 	ld -o $@ -shared -o $@ $(TARGETS) -L../shared -lshared
 
 libgreat_c89.a: $(TARGETS)
-	ar r $@
+	ar r $@ $(TARGETS)
 	ranlib $@
 
 clean:

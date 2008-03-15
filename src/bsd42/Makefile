@@ -10,7 +10,7 @@ libgreat_bsd42.so: $(TARGETS)
 	ld -o $@ -shared -o $@ $(TARGETS) -L../shared -lshared
 
 libgreat_bsd42.a: $(TARGETS)
-	ar r $@
+	ar r $@ $(TARGETS)
 	ranlib $@
 
 clean:
