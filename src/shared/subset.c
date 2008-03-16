@@ -35,7 +35,7 @@
  */
 
 /* Required for strtok_r */
-#define _POSIX_SOURCE
+#define _POSIX_C_SOURCE 199506L
 
 #include <stdbool.h>
 #include <stdlib.h>
