@@ -122,7 +122,7 @@ find_seed(void)
 {
 	char *s;
 	char *ep;
-	long l;
+	long int l;
 
 	/* Arbitary default */
 	const uint32_t defaultseed = 5489;
@@ -145,7 +145,7 @@ find_seed(void)
 	}
 
 	if((errno == ERANGE && (l == LONG_MAX || l == LONG_MIN))
-		|| (l > UINT32_MAX || l < 0)) {
+		|| (l < 0 || (unsigned long int) l > UINT32_MAX)) {
 		great_log(GREAT_LOG_ERROR, "GREAT_RANDOM_SEED",
 			"Out of range: \"%s\"; disregarding\n", s);
 
@@ -155,7 +155,7 @@ find_seed(void)
 	great_log(GREAT_LOG_INFO, "GREAT_RANDOM_SEED",
 		"Seeded as %s", s);
 
-	return l;
+	return (uint32_t) l;
 }
 
 void
@@ -198,7 +198,7 @@ genrand(struct great_random_state *state)
 	}
 
 	/* mag01[x] = x * MATRIX_A  for x = 0,1 */
-	static uint32_t mag01[2] = { 0, MATRIX_A };	/* TODO const? */
+	static const uint32_t mag01[2] = { 0, MATRIX_A };
 
 	/* generate N words at one time */
 	if(state->mti >= N) {
@@ -237,7 +237,7 @@ genrand(struct great_random_state *state)
 static bool
 probability(struct great_random_state *state, double p)
 {
-	return p < (double) genrand(state) / GREAT_RAND_MAX;
+	return p < (0.0 + genrand(state)) / GREAT_RAND_MAX;
 }
 
 bool
@@ -284,7 +284,7 @@ unsigned int
 great_random_choice(unsigned int range)
 {
 	/* See comp.lang.c FAQ 13.16 */
-	unsigned int x = (GREAT_RAND_MAX) / range;
+	unsigned int x = GREAT_RAND_MAX / range;
 	unsigned int y = x * range;
 	uint32_t r;
 
@@ -323,7 +323,7 @@ great_random_long(struct great_random_state *state)
 
 /* Implemented as per great_random_long() */
 int
-great_random_int(void)
+great_random_int(struct great_random_state *state)
 {
 	size_t is = CHAR_BIT * sizeof(int);
 	size_t us = 0;
@@ -333,7 +333,7 @@ great_random_int(void)
 
 	for (o = 0; is > 0; is--, us--) {
 		if (0 == us) {
-			r = genrand(&great_random_failure);
+			r = genrand(state);
 			us = CHAR_BIT * sizeof(uint32_t);
 		}
 

@@ -39,6 +39,23 @@
 #include <limits.h>
 #include <assert.h>
 
+/*
+ * These prototypes are given explicitly here in order to avoid macro
+ * equivalents defined in the system's <ctype.h> header.
+ */
+int isalnum(int c);
+int isalpha(int c);
+int isblank(int c);
+int iscntrl(int c);
+int isdigit(int c);
+int isgraph(int c);
+int islower(int c);
+int isprint(int c);
+int ispunct(int c);
+int isspace(int c);
+int isupper(int c);
+int isxdigit(int c);
+
 #include "wrap.h"
 #include "../../src/shared/random.h"
 #include "../../src/shared/subset.h"
@@ -49,7 +66,7 @@ checkrange(int c)
 {
 	/* 7.4 P1 In all cases the argument is an int, the value of which shall be
 	 * representable as an unsigned char ... */
-	if (c >= 0 && c <= UCHAR_MAX) {
+	if (c >= 0 && c <= (int) UCHAR_MAX) {
 		return;
 	}
 
@@ -97,7 +114,7 @@ xis(const char *subset, int (*fp)(int c), int c) {
 
 	/* 7.4.1 P1 The functions in this subclause return nonzero (true) */
 	do {
-		x = great_random_int();
+		x = great_random_int(NULL);
 	} while (0 == x);
 
 	great_ib(subset, "7.4.1 P1", "Returning random non-zero value");

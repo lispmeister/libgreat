@@ -108,7 +108,7 @@ great_random_long(struct great_random_state *state);
  * Generates a random int in the range INT_MIN to INT_MAX inclusive.
  */
 int
-great_random_int(void);
+great_random_int(struct great_random_state *state);
 
 #endif
 

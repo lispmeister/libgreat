@@ -53,6 +53,12 @@ pstrcmp(const void *p1, const void *p2)
 	return strcmp(* (char * const *) p1, * (char * const *) p2);
 }
 
+static int
+sstrcmp(const void *p1, const void *p2)
+{
+	return strcmp(p1, p2);
+}
+
 /* C99 7.19.5.3 The fopen function */
 FILE *
 fopen(const char * restrict filename, const char * restrict mode)
@@ -63,7 +69,7 @@ fopen(const char * restrict filename, const char * restrict mode)
 
 	/* P3 The argument mode points to a string. If the string is one of the
 	 *    following ... otherwise the behaviour is undefined. */
-	char *modes[] = {
+	const char *modes[] = {
 		"r", "w", "a", "rb", "wb", "ab", "r+", "w+", "a+",
 		"r+b", "rb+", "w+b", "wb+", "a+b", "ab+"
 	};
@@ -71,9 +77,8 @@ fopen(const char * restrict filename, const char * restrict mode)
 	/* Sort for bsearch; we do not assume the execution character set */
 	qsort(modes, sizeof modes / sizeof *modes, sizeof *modes, pstrcmp);
 
-	/* I'm passing &mode here just so I can re-use pstrcmp() */
-	if(!bsearch((void *) &mode, modes, sizeof modes / sizeof *modes,
-		sizeof *modes, pstrcmp)) {
+	if(!bsearch(mode, modes, sizeof modes / sizeof *modes,
+		sizeof *modes, sstrcmp)) {
 		great_ub("stdio:fileaccess:fopen", "7.19.5.3 P3",
 			"Unrecognised mode: \"%s\"", mode);
 

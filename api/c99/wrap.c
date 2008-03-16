@@ -32,6 +32,8 @@
  * $Id$
  */
 
+#include <stdio.h>
+
 #include "wrap.h"
 #include "../../src/shared/wrap.h"
 #include "../../src/shared/random.h"
@@ -44,30 +46,49 @@ struct great_c99 great_c99;
 void
 _init(void) {
 	/* ctype.c */
-	great_c99.isalnum = great_wrap_resolve("isalnum");
-	great_c99.isalpha = great_wrap_resolve("isalpha");
-	great_c99.isblank = great_wrap_resolve("isblank");
-	great_c99.iscntrl = great_wrap_resolve("iscntrl");
-	great_c99.isdigit = great_wrap_resolve("isdigit");
-	great_c99.isgraph = great_wrap_resolve("isgraph");
-	great_c99.islower = great_wrap_resolve("islower");
-	great_c99.isprint = great_wrap_resolve("isprint");
-	great_c99.ispunct = great_wrap_resolve("ispunct");
-	great_c99.isspace = great_wrap_resolve("isspace");
-	great_c99.isupper = great_wrap_resolve("isupper");
-	great_c99.isxdigit = great_wrap_resolve("isxdigit");
+	great_c99.isalnum =
+		(int (*)(int c)) great_wrap_resolve("isalnum");
+	great_c99.isalpha =
+		(int (*)(int c)) great_wrap_resolve("isalpha");
+	great_c99.isblank =
+		(int (*)(int c)) great_wrap_resolve("isblank");
+	great_c99.iscntrl =
+		(int (*)(int c)) great_wrap_resolve("iscntrl");
+	great_c99.isdigit =
+		(int (*)(int c)) great_wrap_resolve("isdigit");
+	great_c99.isgraph =
+		(int (*)(int c)) great_wrap_resolve("isgraph");
+	great_c99.islower =
+		(int (*)(int c)) great_wrap_resolve("islower");
+	great_c99.isprint =
+		(int (*)(int c)) great_wrap_resolve("isprint");
+	great_c99.ispunct =
+		(int (*)(int c)) great_wrap_resolve("ispunct");
+	great_c99.isspace =
+		(int (*)(int c)) great_wrap_resolve("isspace");
+	great_c99.isupper =
+		(int (*)(int c)) great_wrap_resolve("isupper");
+	great_c99.isxdigit =
+		(int (*)(int c)) great_wrap_resolve("isxdigit");
 
 	/* stdio_fileaccess.c */
-	great_c99.fopen = great_wrap_resolve("fopen");
+	great_c99.fopen =
+		(FILE *(*)(const char * restrict, const char * restrict))
+		great_wrap_resolve("fopen");
 
 	/* stdlib_prng.c */
-	great_c99.rand    = great_wrap_resolve("rand");
-	great_c99.srand   = great_wrap_resolve("srand");
+	great_c99.rand =
+		(int (*)(void)) great_wrap_resolve("rand");
+	great_c99.srand =
+		(void (*)(unsigned int)) great_wrap_resolve("srand");
 
 	/* stdlib_memory.c */
-	great_c99.free = great_wrap_resolve("free");
-	great_c99.malloc  = great_wrap_resolve("malloc");
-	great_c99.realloc = great_wrap_resolve("realloc");
+	great_c99.free =
+		(void (*)(void *)) great_wrap_resolve("free");
+	great_c99.malloc  =
+		(void *(*)(size_t)) great_wrap_resolve("malloc");
+	great_c99.realloc =
+		(void *(*)(void *, size_t)) great_wrap_resolve("realloc");
 
 	great_subset_disable();
 

@@ -52,7 +52,7 @@
  * the last element of the array object, the evaluation shall not produce an
  * overflow.
  */
-char *great_nothing = "" + 1;
+char great_nothing[] = "";
 
 /* C99 7.20.3.2 The free function */
 void
@@ -64,7 +64,7 @@ free(void *ptr) {
 		return;
     }
 
-	if(ptr == great_nothing) {
+	if(ptr == great_nothing + 1) {
 		great_log(GREAT_LOG_INFO, "stdlib:memory:free",
 			"Handling great_nothing");
 		return;
@@ -104,7 +104,7 @@ malloc(size_t size)
 		 * malloc when 0 bytes was requested */
 		/* XXX IDB: we could also return an arbitary amount of memory here */
 		assert(size == 0);
-		return great_nothing;
+		return great_nothing + 1;
 
 	default:
 		assert(!"unrecognised great random choice");

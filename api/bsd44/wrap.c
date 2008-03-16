@@ -45,7 +45,8 @@ struct great_bsd44 great_bsd44;
 void
 _init(void) {
 	/* string.c */
-	great_bsd44.strdup = great_wrap_resolve("strdup");
+	great_bsd44.strdup =
+		(char *(*)(const char *)) great_wrap_resolve("strdup");
 
 	great_subset_disable();
 

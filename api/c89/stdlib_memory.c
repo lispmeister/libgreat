@@ -56,7 +56,7 @@
  *
  * TODO reference C89
  */
-char *great_nothing = "" + 1;
+char great_nothing[] = "";
 
 /* XXX free() is missing */
 
@@ -112,7 +112,7 @@ realloc(void *ptr, size_t size)
 			great_ib("stdio:memory:realloc", "4.10.3.4 P?",
 				"Returning great_nothing");
 
-			return great_nothing;
+			return great_nothing + 1;
 
 		default:
 			assert(!"unrecognised great random choice");

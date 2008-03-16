@@ -55,7 +55,7 @@ const char *libname;
 const char *stdname;
 
 static void
-writeint(int i, unsigned int base, const char digits[])
+writeint(int i, int base, const char digits[])
 {
 	assert(base = strlen(digits));
 
@@ -214,7 +214,7 @@ vlog(enum great_log_level level, const char *facility, const char *section, cons
 void
 great_log_init(const char *name, const char *standard)
 {
-	const char *log;
+	const char *logfile;
 	int f;
 
 	assert(name);
@@ -225,21 +225,21 @@ great_log_init(const char *name, const char *standard)
 	/* default to stderr */
 	fd = STDERR_FILENO;
 
-	log = getenv("GREAT_LOG");
-	if (!log) {
+	logfile = getenv("GREAT_LOG");
+	if (!logfile) {
 		return;
 	}
 
-	if (0 == strlen(log)) {
+	if (0 == strlen(logfile)) {
 		return;
 	}
 
-	if (!strcmp(log, "-")) {
+	if (!strcmp(logfile, "-")) {
 		fd = STDOUT_FILENO;
 		return;
 	}
 
-	f = open(log, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	f = open(logfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (-1 == f) {
 		/* TODO deal with errno */
 		return;

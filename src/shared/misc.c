@@ -38,6 +38,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "misc.h"
+
 char *
 great_strdup(const char *str)
 {

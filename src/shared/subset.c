@@ -69,7 +69,7 @@ unsigned int subsets_disabled;
 static bool
 cisdelim(int c)
 {
-	char *s = "[^$()\\:|-.";
+	const char *s = "[^$()\\:|-.";
 
 	/*
 	 * These characters are punctuation, but may not be used as delimiters,
@@ -129,7 +129,7 @@ single(const char *rs)
 bool
 great_subset_init(void)
 {
-	char *restr;
+	const char *restr;
 
 	/* TODO consider freeing previous subsets, so we can be re-called for environment changes */
 	/* TODO add a _fini mechanism to free on exit */

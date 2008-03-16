@@ -32,6 +32,8 @@
  * $Id$
  */
 
+#include <stddef.h>
+
 #include "wrap.h"
 #include "../../src/shared/wrap.h"
 #include "../../src/shared/random.h"
@@ -44,8 +46,10 @@ struct great_c89 great_c89;
 void
 _init(void) {
 	/* stdlib_memory.c */
-	great_c89.malloc  = great_wrap_resolve("malloc");
-	great_c89.realloc = great_wrap_resolve("realloc");
+	great_c89.malloc  =
+		(void *(*)(size_t)) great_wrap_resolve("malloc");
+	great_c89.realloc =
+		(void *(*)(void *, size_t)) great_wrap_resolve("realloc");
 
 	great_subset_disable();
 

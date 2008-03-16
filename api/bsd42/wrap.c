@@ -32,6 +32,7 @@
  * $Id$
  */
 
+#include <sys/time.h>
 #include <stddef.h>
 
 #include "wrap.h"
@@ -45,7 +46,9 @@ struct great_bsd42 great_bsd42;
 void
 _init(void) {
 	/* sys_time.c */
-	great_bsd42.gettimeofday = great_wrap_resolve("gettimeofday");
+	great_bsd42.gettimeofday =
+		(int (*)(struct timeval * restrict, void * restrict))
+		great_wrap_resolve("gettimeofday");
 
 	great_subset_disable();
 
