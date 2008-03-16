@@ -19,7 +19,7 @@ random_test: random_test.o random.o log.o subset.o misc.o
 	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) \
 		random_test.o random.o log.o subset.o misc.o -lport
 
-log_test: log_test.o log.o subset.o
+log_test: log_test.o log.o subset.o misc.o
 	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) \
 		log_test.o log.o subset.o misc.o -lport
 
