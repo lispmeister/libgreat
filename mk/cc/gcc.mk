@@ -147,8 +147,8 @@ CFLAGS += -fno-common
 CFLAGS += -Waggregate-return
 
 # Targetted primarily for interfacing with code that doesn't use prototypes;
-# otherwise pretty noisy.  Also warn about "x = -1;" is x is unsigned.
-CFLAGS += -Wconversion
+# otherwise pretty noisy.  Also warn about "x = -1;" if x is unsigned.
+# CFLAGS += -Wconversion
 
 # Warn for floating point equality expressions.
 CFLAGS += -Wfloat-equal

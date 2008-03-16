@@ -34,10 +34,6 @@
  * $Id$
  */
 
-/* Required for strdup() on GNU systems */
-#define _GNU_SOURCE
-
-#include <string.h>
 #include <errno.h>
 #include <stddef.h>
 
@@ -45,6 +41,13 @@
 #include "../../src/shared/subset.h"
 #include "../../src/shared/random.h"
 #include "../../src/shared/log.h"
+
+/*
+ * A prototype is given here as GCC goes ahead and performs some
+ * optimisation on our strdup function, thinking it is a call.
+ * This is avoided by not including <string.h>.
+ */
+char *strdup(const char *str);
 
 char *
 strdup(const char *str)

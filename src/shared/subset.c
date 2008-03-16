@@ -34,6 +34,9 @@
  * $Id$
  */
 
+/* Required for strtok_r */
+#define _POSIX_SOURCE
+
 #include <stdbool.h>
 #include <stdlib.h>
 #include <regex.h>
