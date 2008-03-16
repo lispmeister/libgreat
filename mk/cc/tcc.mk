@@ -2,6 +2,6 @@
 #
 # $Id$
 
-CFLAGS += -Xs -Yposix
-SFLAGS +=
+CFLAGS = -Xs -Yposix
+SFLAGS =
 

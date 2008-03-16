@@ -3,8 +3,8 @@
 #
 # $Id$
 
-CFLAGS = $(SFLAGS) -I $(SRC)
-LDFLAGS = -L $(SRC)/shared -L $(SRC)/port
+CFLAGS += -I $(SRC)
+LDFLAGS += -L $(SRC)/shared -L $(SRC)/port
 
 CLEAN += $(LIB).so
 

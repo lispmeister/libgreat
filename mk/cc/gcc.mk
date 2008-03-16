@@ -4,8 +4,8 @@
 #
 # $Id$
 
-CFLAGS +=
-SFLAGS += -fPIC
+CFLAGS =
+SFLAGS = -fPIC
 
 # Partial makefile example with majority of gcc warnings
 #

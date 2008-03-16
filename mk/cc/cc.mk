@@ -2,6 +2,6 @@
 #
 # $Id$
 
-CFLAGS +=
-SFLAGS +=
+CFLAGS =
+SFLAGS =
 
