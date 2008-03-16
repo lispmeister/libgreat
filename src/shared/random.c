@@ -298,16 +298,49 @@ great_random_choice(unsigned int range)
 long int
 great_random_long(struct great_random_state *state)
 {
-	assert(sizeof(long) == sizeof(uint32_t));	/* XXX */
+	size_t ls = CHAR_BIT * sizeof(long);
+	size_t us = 0;
 
-	return (long) genrand(state);
+	uint32_t r = 0;	/* random source */
+	long int o;	/* output */
+
+	/*
+	 * Values are set bit-by-bit for portability, should the range of a type
+	 * not correspond exactly to its size.
+	 */
+	for (o = 0; ls > 0; ls--, us--) {
+		if (0 == us) {
+			r = genrand(state);
+			us = CHAR_BIT * sizeof(uint32_t);
+		}
+
+		o = (o << 1) | (r & 1);
+		r >>= 1;
+	}
+
+	return o;
 }
 
+/* Implemented as per great_random_long() */
 int
 great_random_int(void)
 {
-	assert(sizeof(int) == sizeof(uint32_t));
+	size_t is = CHAR_BIT * sizeof(int);
+	size_t us = 0;
 
-	return (int) genrand(&great_random_failure);
+	uint32_t r = 0;
+	int o;
+
+	for (o = 0; is > 0; is--, us--) {
+		if (0 == us) {
+			r = genrand(&great_random_failure);
+			us = CHAR_BIT * sizeof(uint32_t);
+		}
+
+		o = (o << 1) | (r & 1);
+		r >>= 1;
+	}
+
+	return o;
 }
 

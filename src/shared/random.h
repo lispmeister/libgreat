@@ -99,13 +99,13 @@ unsigned int
 great_random_choice(unsigned int range);
 
 /*
- * Generates a random long.
+ * Generates a random long in the range LONG_MIN to LONG_MAX inclusive.
  */
 long int
 great_random_long(struct great_random_state *state);
 
 /*
- * Generates a random int.
+ * Generates a random int in the range INT_MIN to INT_MAX inclusive.
  */
 int
 great_random_int(void);
