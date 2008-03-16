@@ -31,7 +31,6 @@
 /*
  * Shared logging.
  *
- * TODO Write to a stack instead, and hence write() in one go.
  * TODO Set logging level by environment
  *
  * $Id$
@@ -54,13 +53,98 @@ int fd;
 const char *libname;
 const char *stdname;
 
+/*
+ * This is a buffer maintained for log messages; they are output one line at a
+ * time.
+ */
+char *buffer;
+size_t bufferindex;
+size_t buffersize;
+
+/*
+ * Prerequisite: s contains one or more characters before a newline.
+ */
+static void
+flush(char *s) {
+	char *p;
+
+	assert(s);
+	assert(*s);
+	assert(*s != '\n');
+
+	p = strchr(s, '\n');
+	if (!p) {
+		return;
+	}
+
+	/* strchr() should return >= s */
+	assert(p >= s);
+
+	/* Strings should not start \n */
+	assert(p > s);
+
+	p++;	/* skip newline */
+
+	/* All strings ought to be more than just "\n" */
+	assert(p - s > 1);
+	write(fd, s, p - s);
+
+	assert(bufferindex >= (size_t) (p - s));
+	bufferindex -= p - s;
+	memmove(s, p, buffersize - bufferindex);
+
+	if (!*s) {
+		return;
+	}
+
+	flush(s);
+}
+
+/*
+ * Push a string to the log buffer. If the string contains a newline,
+ * everything up to and including each newline is output.
+ *
+ * Since this is for internal use only, it makes several demands on the
+ * content of these strings, for sanity.
+ */
+/* TODO consider making a variadic interface */
+static void
+push(const char *s, size_t len)
+{
+	assert(s);
+	assert(*s);
+	assert(len > 0);
+
+	if (len + 1 > buffersize - bufferindex) {
+		size_t ns;
+		char *n;
+
+		ns = 0 == buffersize ? 128 : buffersize * 2;
+		ns += len;
+		assert(ns > buffersize);
+		n = realloc(buffer, ns);
+		if (!n) {
+			/* TODO error */
+			return;
+		}
+
+		buffer = n;
+		buffersize = ns;
+	}
+
+	strncpy(buffer + bufferindex, s, len);
+	bufferindex += len;
+
+	flush(buffer);
+}
+
 static void
 writeint(int i, int base, const char digits[])
 {
 	assert(base = strlen(digits));
 
 	if (i < 0) {
-		write(fd, "-", 1);
+		push("-", 1);
 		i = abs(i);
 	}
 
@@ -72,7 +156,7 @@ writeint(int i, int base, const char digits[])
 		writeint(i / base, base, digits);
 	}
 
-	write(fd, &digits[i % base], 1);
+	push(&digits[i % base], 1);
 }
 
 /*
@@ -94,7 +178,7 @@ vlogf(const char *fmt, va_list ap)
 
 			switch(*p) {
 			case '%':
-				write(fd, "%", 1);
+				push("%", 1);
 				break;
 
 			case 's': {
@@ -102,7 +186,7 @@ vlogf(const char *fmt, va_list ap)
 
 				s = va_arg(ap, char *);
 				assert(s);
-				write(fd, s, strlen(s));
+				push(s, strlen(s));
 				break;
 			}
 
@@ -126,7 +210,7 @@ vlogf(const char *fmt, va_list ap)
 				char c;
 
 				c = va_arg(ap, int);	/* promoted */
-				write(fd, &c, 1);
+				push(&c, 1);
 				break;
 			}
 
@@ -139,7 +223,7 @@ vlogf(const char *fmt, va_list ap)
 		default:
 			assert(isprint((int) *p));
 
-			write(fd, p, 1);
+			push(p, 1);
 			break;
 		}
 	}
@@ -157,56 +241,56 @@ vlog(enum great_log_level level, const char *facility, const char *section, cons
 
 	great_timestamp(buf);
     /* -2 to cut off the \n\0 */
-    write(fd, buf, sizeof buf - 2);
-	write(fd, " ", 1);
-	write(fd, libname, strlen(libname));
-	write(fd, " ", 1);
-	write(fd, facility, strlen(facility));
-	write(fd, " ", 1);
+    push(buf, sizeof buf - 2);
+	push(" ", 1);
+	push(libname, strlen(libname));
+	push(" ", 1);
+	push(facility, strlen(facility));
+	push(" ", 1);
 	if (stdname && section) {
 		assert(strlen(stdname) > 0);
 		assert(strlen(section) > 0);
 
-		write(fd, "[", 1);
-		write(fd, stdname, strlen(stdname));
-		write(fd, " ", 1);
-		write(fd, section, strlen(section));
-		write(fd, "] ", 2);
+		push("[", 1);
+		push(stdname, strlen(stdname));
+		push(" ", 1);
+		push(section, strlen(section));
+		push("] ", 2);
 	}
 
 	switch (level) {
 	case GREAT_LOG_INFO:
-		write(fd, "INFO", strlen("INFO"));
+		push("INFO", strlen("INFO"));
 		break;
 
 	case GREAT_LOG_DEBUG:
-		write(fd, "DEBUG", strlen("DEBUG"));
+		push("DEBUG", strlen("DEBUG"));
 		break;
 
 	case GREAT_LOG_INTERCEPT:
-		write(fd, "IB", strlen("IB"));
+		push("IB", strlen("IB"));
 		break;
 
 	case GREAT_LOG_DEFAULT:
-		write(fd, "DEFAULT", strlen("DEFAULT"));
+		push("DEFAULT", strlen("DEFAULT"));
 		break;
 
 	case GREAT_LOG_ERROR:
-		write(fd, "ERROR", strlen("ERROR"));
+		push("ERROR", strlen("ERROR"));
 		break;
 
 	case GREAT_LOG_UNDEFINED:
-		write(fd, "UB", strlen("UB"));
+		push("UB", strlen("UB"));
 		break;
 	}
 
 	if (fmt) {
-		write(fd, ": ", 2);
+		push(": ", 2);
 
 		vlogf(fmt, ap);
 	}
 
-	write(fd, "\n", 1);
+	push("\n", 1);
 
 	great_subset_enable();
 }
