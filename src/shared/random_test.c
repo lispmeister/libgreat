@@ -57,9 +57,10 @@ int main(int argc, char **argv) {
 	for(i = 0; i < 10; i++) {
 		r = rand();
 
-		printf("%u: %u %s %u\n",
+		printf("%u: %u %s %11u %11ld %11ld\n",
 			i, great_random_choice(range),
-			great_random_bool(NULL) ? "true " : "false", r);
+			great_random_bool(NULL) ? "true " : "false",
+			r, great_random_long(NULL), great_random_int(NULL));
 	}
 
 	great_log_fini();
