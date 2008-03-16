@@ -33,6 +33,7 @@
  */
 
 #include <string.h>
+#include <stddef.h>
 #include <errno.h>
 
 #include "log.h"
@@ -41,7 +42,7 @@ int
 main(void)
 {
 	int a[] = { 0, 1, 7, 9, 10, 11, 15, 16, 17, 123, 99972, -1, -2, -37, -937 };
-	int i;
+	size_t i;
 
 	great_log_init("logtest", "LT");
 
