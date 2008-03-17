@@ -1,9 +1,8 @@
 # Compile a dynamic library.
-# TODO have this include ar.mk
 #
 # $Id$
 
-CFLAGS += -I $(SRC)
+CFLAGS += -I $(SRC) $(SFLAGS)
 LDFLAGS += -L $(SRC)/shared -L $(SRC)/port
 
 CLEAN += $(LIB).so
@@ -14,6 +13,4 @@ $(LIB).so: $(TARGETS)
 	ld -o $@ -shared $(TARGETS) \
 		-L $(SRC)/shared -lshared \
 		-L $(SRC)/port -lport
-
-include $(MK)/cc/$(CC).mk
 

@@ -21,6 +21,6 @@ CLEAN += $(TESTS)
 
 all: $(TESTS)
 
+include $(MK)/cc.mk
 include $(MK)/rules.mk
-include $(MK)/exec.mk
 

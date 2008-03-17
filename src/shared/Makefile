@@ -23,7 +23,7 @@ log_test: log_test.o log.o subset.o misc.o
 	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) \
 		log_test.o log.o subset.o misc.o -lport
 
+include $(MK)/cc.mk
 include $(MK)/rules.mk
 include $(MK)/ar.mk
-include $(MK)/exec.mk
 
