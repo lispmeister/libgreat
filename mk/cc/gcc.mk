@@ -227,9 +227,9 @@ CFLAGS += -Wimport
 # warn if precompiled header is found but can't be used
 # CFLAGS += -Winvalid-pch
 
-CFLAGS += -Wpacked # warn if packed attibute has no effect
+# CFLAGS += -Wpacked # warn if packed attibute has no effect
 
-CFLAGS += -Wpadded  # warn if padding is included in a structure
+# CFLAGS += -Wpadded  # warn if padding is included in a structure
 
 # This will cause assert() to emit a warning, even when NDEBUG is not defined.
 # CFLAGS += -Wunreachable-code
