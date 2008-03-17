@@ -52,11 +52,17 @@ main(void)
 	great_ub("xyz", "1.2.3", "a %s c", "b");
 	great_ib("xyz", "4.5.6", "x %s z", "y");
 
-	great_log(GREAT_LOG_DEFAULT, "stdio:prng:rand", "abc %s", "def");
+	great_log(GREAT_LOG_DEBUG, "f", "%.s %.1s %.2s %.3s %.123s",
+		"a234", "b234", "c234", "d234", "e234");
+	great_log(GREAT_LOG_DEBUG, "f", "%.*s%.*s%.*s%.*s",
+		0, "z", 1, "az", 2, "bcz", 3, "defzz");
+
+	great_log(GREAT_LOG_DEFAULT, "stdio:prng:rand", "abc %.2s", "def");
 	great_log(GREAT_LOG_DEBUG, "x", "%%");
 	great_log(GREAT_LOG_UNDEFINED, "x", NULL);
 	great_log(GREAT_LOG_ERROR, "y", "%s", strerror(ENOENT));
 	great_log(GREAT_LOG_INTERCEPT, "stdio:prng:rand", "%c%s%c%s", 'a', "bc", 'd', "efg");
+
 	for (i = 0; i < sizeof a / sizeof *a; i++) {
 		great_log(GREAT_LOG_INFO, "i", "%o %d %i %x %X",
 			a[i], a[i], a[i], a[i], a[i]);

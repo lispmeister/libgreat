@@ -108,7 +108,13 @@ great_log_fini(void);
  * Other characters are passed through as-is. These must be printable
  * characters, as defined by isprint().
  *
- * No conversion specifiers, lengths, widths, precisions or flags are provided.
+ * Precision is provided for %s. This may be given as:
+ *
+ *	%.s		Zero
+ *	%.*s	A positive int passed variadicaly
+ *	%123s	A positive decimal number
+ *
+ * No conversion specifiers, lengths, widths or flags are provided.
  */
 void
 great_log(enum great_log_level level, const char *facility, const char *fmt, ...);

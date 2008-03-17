@@ -44,6 +44,7 @@
 #include <errno.h>
 #include <assert.h>
 #include <stdarg.h>
+#include <limits.h>
 
 #include "log.h"
 #include "subset.h"
@@ -72,7 +73,7 @@ flush(char *s) {
 	assert(*s);
 	assert(*s != '\n');
 
-	p = strchr(s, '\n');
+	p = memchr(s, '\n', bufferindex);
 	if (!p) {
 		return;
 	}
@@ -106,6 +107,8 @@ flush(char *s) {
  *
  * Since this is for internal use only, it makes several demands on the
  * content of these strings, for sanity.
+ *
+ * Pushing a string of zero bytes is permitted (and ignored) for convenience.
  */
 /* TODO consider making a variadic interface */
 static void
@@ -113,7 +116,10 @@ push(const char *s, size_t len)
 {
 	assert(s);
 	assert(*s);
-	assert(len > 0);
+
+	if (0 == len) {
+		return;
+	}
 
 	if (len + 1 > buffersize - bufferindex) {
 		size_t ns;
@@ -160,6 +166,58 @@ writeint(int i, int base, const char digits[])
 }
 
 /*
+ * Read the precision given by a formatting specifier. This is expected to be
+ * passed a pointer to the character after the '.' which begins the precision
+ * specificiation. It will consume as many further character as it needs, up to
+ * but not including the conversion specifier.
+ *
+ * The argument ap is expected to point to the current va_list; this may be
+ * moved along by way of va_arg() if appropiate (namely for a precision of '*').
+ *
+ * A pointer to the conversion specifier is returned. (That is, a pointer to
+ * the next character after the precision has been dealt with.)
+ */
+static const char *
+readprecision(const char *p, int *precision, va_list *ap)
+{
+	char *ep;
+	long int l;
+
+	assert(p);
+	assert(*p);
+	assert(precision);
+
+	/* precision passed as parameter */
+	if ('*' == *p) {
+		*precision = va_arg(*ap, int);
+		return p + 1;
+	}
+
+	/* No precision; e.g. "%.s" */
+	if (!isdigit((unsigned char) *p)) {
+		*precision = 0;
+		return p;
+	}
+
+	errno = 0;
+	l = strtol(p, &ep, 10);
+	assert(ep > p);
+
+	if (ERANGE == errno && (LONG_MAX == l || LONG_MIN == l)) {
+		/* TODO handle error */
+		return ep;
+	}
+
+	if (l > INT_MAX || l < INT_MIN) {
+		/* TODO handle error */
+		return ep;
+	}
+
+	*precision = l;
+	return ep;
+}
+
+/*
  * Note that the format string may only contain printable characters.
  */
 static void
@@ -170,11 +228,18 @@ vlogf(const char *fmt, va_list ap)
 	assert(fmt);
 
 	for (p = fmt; *p; p++) {
+		int precision = -1;
+
 		switch (*p) {
 		case '%':
 			p++;
-
 			assert(*p);
+
+			/* readprecision() will nudge ap along for a precision of ".*" */
+			if ('.' == *p) {
+				p = readprecision(p + 1, &precision, &ap);
+				assert(precision >= 0);
+			}
 
 			switch(*p) {
 			case '%':
@@ -186,7 +251,7 @@ vlogf(const char *fmt, va_list ap)
 
 				s = va_arg(ap, char *);
 				assert(s);
-				push(s, strlen(s));
+				push(s, -1 == precision ? (int) strlen(s) : precision);
 				break;
 			}
 
@@ -221,12 +286,24 @@ vlogf(const char *fmt, va_list ap)
 			break;
 
 		default:
-			assert(isprint((int) *p));
+			assert(isprint((unsigned char) *p));
 
 			push(p, 1);
 			break;
 		}
 	}
+}
+
+static void
+avlog(const char *fmt, ...)
+{
+	va_list ap;
+
+	assert(fmt);
+
+	va_start(ap, fmt);
+	vlogf(fmt, ap);
+	va_end(ap);
 }
 
 static void
@@ -241,21 +318,12 @@ vlog(enum great_log_level level, const char *facility, const char *section, cons
 
 	great_timestamp(buf);
     /* -2 to cut off the \n\0 */
-    push(buf, sizeof buf - 2);
-	push(" ", 1);
-	push(libname, strlen(libname));
-	push(" ", 1);
-	push(facility, strlen(facility));
-	push(" ", 1);
+	avlog("%.*s %s %s ", sizeof buf - 2, buf, libname, facility);
 	if (stdname && section) {
 		assert(strlen(stdname) > 0);
 		assert(strlen(section) > 0);
 
-		push("[", 1);
-		push(stdname, strlen(stdname));
-		push(" ", 1);
-		push(section, strlen(section));
-		push("] ", 2);
+		avlog("[%s %s] ", stdname, section);
 	}
 
 	switch (level) {
