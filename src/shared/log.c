@@ -48,8 +48,8 @@
 
 #include "log.h"
 #include "subset.h"
-#include "../port/time.h"
-#include "../port/io.h"
+#include "../timestamp.h"
+#include "../io.h"
 
 FILE *fp;
 const char *libname;

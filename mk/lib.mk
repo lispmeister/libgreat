@@ -3,7 +3,7 @@
 # $Id$
 
 CFLAGS += -I $(SRC) $(SFLAGS)
-LDFLAGS += -L $(SRC)/shared -L $(SRC)/port
+LDFLAGS += -L $(SRC)/shared -L $(SRC)
 
 CLEAN += $(LIB).so
 
@@ -11,6 +11,5 @@ all: $(LIB).so $(LIB).a
 
 $(LIB).so: $(TARGETS)
 	ld -o $@ -shared $(TARGETS) \
-		-L $(SRC)/shared -lshared \
-		-L $(SRC)/port -lport
+		$(LDFLAGS) -lshared -lport
 

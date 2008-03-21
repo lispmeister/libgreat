@@ -34,14 +34,22 @@
  * $Id$
  */
 
-#ifndef GREAT_PORT_TIME_H
-#define GREAT_PORT_TIME_H
+/* Required for reentrant functions on GNU systems */
+#define _POSIX_C_SOURCE 199506L
 
-/*
- * Output a timestamp to the given file descriptor.
- */
+#include <time.h>
+
+#include "../timestamp.h"
+
+/* XXX this is a particularly horrible interface; rework it */
 void
-great_timestamp(char buf[26]);
+great_timestamp(char buf[26])
+{
+	time_t t;
+	struct tm tm;
 
-#endif
+	t = time(NULL);
+	localtime_r(&t, &tm);
+	asctime_r(&tm, buf);
+}
 

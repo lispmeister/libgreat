@@ -1,11 +1,11 @@
 # $Id$
 
-MK = ../../../mk
-SRC = ../../../src
+MK = ../../mk
+SRC = ../../src
 
 LIB = libport
 
-TARGETS = time.o io.o
+TARGETS = timestamp.o io.o
 
 all: $(LIB).a
 

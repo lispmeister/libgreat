@@ -3,7 +3,7 @@
 # $Id$
 
 CFLAGS += -I $(SRC) $(SFLAGS)
-LDFLAGS += -L $(SRC)/shared -L $(SRC)/port
+LDFLAGS += -L $(SRC)/shared -L $(SRC)
 
 CLEAN += $(LIB).a
 
