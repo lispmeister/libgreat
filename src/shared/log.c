@@ -39,18 +39,19 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <ctype.h>
-#include <unistd.h>
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
 #include <stdarg.h>
 #include <limits.h>
+#include <stdio.h>
 
 #include "log.h"
 #include "subset.h"
 #include "../port/time.h"
+#include "../port/io.h"
 
-int fd;
+FILE *fp;
 const char *libname;
 const char *stdname;
 
@@ -88,7 +89,7 @@ flush(char *s) {
 
 	/* All strings ought to be more than just "\n" */
 	assert(p - s > 1);
-	write(fd, s, p - s);
+	great_write(fp, s, p - s);
 
 	assert(bufferindex >= (size_t) (p - s));
 	bufferindex -= p - s;
@@ -367,7 +368,7 @@ void
 great_log_init(const char *name, const char *standard)
 {
 	const char *logfile;
-	int f;
+	FILE *f;
 
 	assert(name);
 
@@ -375,7 +376,7 @@ great_log_init(const char *name, const char *standard)
 	stdname = standard;
 
 	/* default to stderr */
-	fd = STDERR_FILENO;
+	fp = stderr;
 
 	logfile = getenv("GREAT_LOG");
 	if (!logfile) {
@@ -387,27 +388,31 @@ great_log_init(const char *name, const char *standard)
 	}
 
 	if (!strcmp(logfile, "-")) {
-		fd = STDOUT_FILENO;
+		fp = stdout;
 		return;
 	}
 
-	f = open(logfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	if (-1 == f) {
+	f = fopen(logfile, "a");
+	if (!f) {
 		/* TODO deal with errno */
 		return;
 	}
 
-	fd = f;
+	fp = f;
 }
 
 void
 great_log_fini(void)
 {
-	if (STDERR_FILENO == fd) {
+	if (stderr == fp) {
 		return;
 	}
 
-	close(fd);
+	if (stdout == fp) {
+		return;
+	}
+
+	fclose(fp);
 }
 
 void

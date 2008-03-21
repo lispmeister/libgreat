@@ -5,7 +5,7 @@ SRC = ../../../src
 
 LIB = libport
 
-TARGETS = time.o
+TARGETS = time.o io.o
 
 all: $(LIB).a
 
