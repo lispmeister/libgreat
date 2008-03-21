@@ -34,6 +34,9 @@
  * $Id$
  */
 
+/* Required for fileno() on GNU systems */
+#define _POSIX_C_SOURCE 199506L
+
 #include <unistd.h>
 #include <stddef.h>
 #include <stdio.h>
