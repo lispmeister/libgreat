@@ -3,7 +3,7 @@
 MK = ../../mk
 SRC = ../../src
 
-LIB = libgreat_bsd42
+LIB = libgreat_c99
 
 TARGETS = wrap.o stdlib_prng.o stdlib_memory.o stdio_fileaccess.o ctype.o
 
