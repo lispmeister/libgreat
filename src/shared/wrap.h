@@ -52,8 +52,8 @@
  *
  * If it fails to locate the symbol from RTLD_NEXT, it will abort().
  */
-void *
-great_wrap_resolve(const char *functionname);
+void (*
+great_wrap_resolve(const char *functionname))(void);
 
 #endif
 

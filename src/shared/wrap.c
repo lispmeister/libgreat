@@ -44,22 +44,32 @@
 #include "wrap.h"
 #include "log.h"
 
-void *
-great_wrap_resolve(const char *functionname)
+void (*
+great_wrap_resolve(const char *functionname))(void)
 {
-	void *f;
+	void (**f)(void);
 
 	assert(functionname);
 
 	/*
-	 * POSIX guarentees that a function pointer is expressable by void *.
+	 * POSIX guarantees that a function pointer is expressible by void *.
+	 * Rather than conform to this assumption (which makes GCC unhappy, and
+	 * understandably so), this is avoided by resolving a pointer to a pointer
+	 * to a function, and then dereferencing that.
+	 *
+	 * This works because the value of a function is its address (hence
+	 * dereferencing a pointer to a function gives the address of the function
+	 * again). C defines that any function pointer may express the address of
+	 * any other function pointer, hence for void (**f)(void), *f becomes our
+	 * equivalent to void *.
 	 */
+
 	f = dlsym(RTLD_NEXT, functionname);
 	if(!f) {
 		great_log(GREAT_LOG_ERROR, "wrap", "dlsym: %s", dlerror());
 		abort();
 	}
 
-	return f;
+	return *f;
 }
 
