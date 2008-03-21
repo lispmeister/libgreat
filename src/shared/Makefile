@@ -5,7 +5,7 @@ SRC = ../../src
 
 LIB = libshared
 
-TARGETS = wrap.o random.o subset.o log.o misc.o
+TARGETS = random.o subset.o log.o misc.o
 TESTS = random_test log_test
 CLEAN += $(TESTS)
 

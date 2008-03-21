@@ -41,8 +41,8 @@
 #include <dlfcn.h>
 #include <assert.h>
 
-#include "wrap.h"
-#include "log.h"
+#include "../wrap.h"
+#include "../shared/log.h"
 
 void (*
 great_wrap_resolve(const char *functionname))(void)

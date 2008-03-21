@@ -36,7 +36,7 @@
 #include <stddef.h>
 
 #include "wrap.h"
-#include "../../src/shared/wrap.h"
+#include "../../src/wrap.h"
 #include "../../src/shared/random.h"
 #include "../../src/shared/subset.h"
 #include "../../src/shared/log.h"
