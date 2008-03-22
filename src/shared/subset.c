@@ -39,7 +39,6 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
-#include <regex.h>
 #include <ctype.h>
 #include <assert.h>
 #include <errno.h>
@@ -48,9 +47,10 @@
 #include "subset.h"
 #include "log.h"
 #include "misc.h"
+#include "../re.h"
 
 struct subset {
-	regex_t preg;
+	struct great_re *re;
 
 	struct subset *next;
 };
@@ -90,7 +90,7 @@ static bool
 single(const char *rs)
 {
 	int e;
-	regex_t re;
+	struct great_re *re;
 	struct subset *new;
 
 	assert(rs);
@@ -99,15 +99,14 @@ single(const char *rs)
 		return false;
 	}
 
-	e = regcomp(&re, rs, REG_EXTENDED | REG_NOSUB);
-	if (e) {
+	re = great_re_comp(rs, &e);
+	if (!re) {
 		char buf[128];
 
-		/* XXX this calls malloc. we ought to disable all subsets until _init() is complete */
-		regerror(e, &re, buf, sizeof buf);
+		great_re_error(e, buf, sizeof buf);
 		great_log(GREAT_LOG_ERROR, "GREAT_SUBSETS",
 			"%s; disregarding /%s/", buf, rs);
-		regfree(&re);
+		great_re_free(re);
 		return false;
 	}
 
@@ -115,12 +114,12 @@ single(const char *rs)
 	new = malloc(sizeof *new);	/* XXX these should be our callbacks instead */
 	if (!new) {
 		great_perror("GREAT_SUBSETS", "malloc");
-		regfree(&re);
+		great_re_free(re);
 		return false;
 	}
 
 	/* push to head of list; order is irrelevant */
-	new->preg = re;
+	new->re = re;
 	new->next = subsets;
 	subsets = new;
 
@@ -189,7 +188,7 @@ great_subset(const char *name)
 	/* TODO sanity check name */
 
 	for (subset = subsets; subset; subset = subset->next) {
-		if (!regexec(&subset->preg, name, 0, NULL, 0)) {
+		if (!great_re_match(subset->re, name)) {
 			return true;
 		}
 	}
