@@ -23,7 +23,7 @@ CFLAGS += -O2       # most common optimization setting
 
 # Debugging
 # Produce debugging information in the native platform debug format.
-# CFLAGS += -g
+CFLAGS += -g
 
 # Version of C desired
 # CFLAGS += -std=c89     # Really means ISO C90
