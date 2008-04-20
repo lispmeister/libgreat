@@ -56,7 +56,7 @@ strdup(const char *str)
 		return great_bsd44.strdup(str);
 	}
 
-	if (!great_random_bool(NULL)) {
+	if (!great_random_probability(NULL)) {
 		great_log(GREAT_LOG_DEFAULT, "string:memory:strdup", NULL);
 		return great_bsd44.strdup(str);
 	}

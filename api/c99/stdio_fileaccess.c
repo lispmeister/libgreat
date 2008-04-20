@@ -67,6 +67,11 @@ fopen(const char * restrict filename, const char * restrict mode)
 		return great_c99.fopen(filename, mode);
 	}
 
+	if (!great_random_probability(NULL)) {
+		great_log(GREAT_LOG_DEFAULT, "stdio:fileaccess:fopen", NULL);
+		return great_c99.fopen(filename, mode);
+	}
+
 	/* P3 The argument mode points to a string. If the string is one of the
 	 *    following ... otherwise the behaviour is undefined. */
 	const char *modes[] = {

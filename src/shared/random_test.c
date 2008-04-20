@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 
 		printf("%u: %u %s %11u %11ld %11d\n",
 			i, great_random_choice(range),
-			great_random_bool(NULL) ? "true " : "false",
+			great_random_probability(NULL) ? "true " : "false",
 			r, great_random_long(NULL), great_random_int(NULL));
 	}
 

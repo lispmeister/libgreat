@@ -241,7 +241,7 @@ probability(struct great_random_state *state, double p)
 }
 
 bool
-great_random_bool(struct great_random_state *state)
+great_random_probability(struct great_random_state *state)
 {
 	const char *s;
 	double d;

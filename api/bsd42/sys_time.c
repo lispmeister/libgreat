@@ -49,7 +49,7 @@ gettimeofday(struct timeval * restrict tp, void * restrict tzp)
 		return great_bsd42.gettimeofday(tp, tzp);
 	}
 
-	if (!great_random_bool(NULL)) {
+	if (!great_random_probability(NULL)) {
 		great_log(GREAT_LOG_DEFAULT, "sys:time:gettimeofday", NULL);
 		return great_bsd42.gettimeofday(tp, tzp);
 	}

@@ -87,13 +87,25 @@ great_random_seed(struct great_random_state *state, uint32_t seed);
  * Randomly return true with a probability given by the environment
  * variable GREAT_PROBABILITY. If this is not set, the probability
  * defaults to 0.5.
+ *
+ * This is intended to be used to guard entry to functions, which default
+ * to the system's implementation if this returns false. Descisions for
+ * various types of failure should use great_random_choice() instead.
  */
 bool
-great_random_bool(struct great_random_state *state);
+great_random_probability(struct great_random_state *state);
 
 /*
  * Randomly return a value in the range 0 to max - 1 inclusive.
  * The PRNG state used is great_random_failure.
+ *
+ * This is intended to provide a mechanism for switching evenly between
+ * various types of failure once it is known that a function should not.
+ * default to the underlying implementation.
+ *
+ * See great_random_probability() for the descision to default; switches
+ * for various behaviours on great_random_choice() should not include
+ * defaulting to the underlying implementation.
  */
 unsigned int
 great_random_choice(unsigned int range);

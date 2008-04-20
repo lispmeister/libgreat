@@ -68,15 +68,17 @@ malloc(size_t size)
 		return great_c89.malloc(size);
 	}
 
-	/* P? ...either a null pointer */
-	if(!great_random_bool(NULL)) {
-		great_ib("stdio:memory:malloc", "4.10.3.3 P?", "Returning NULL");
-		return NULL;
+	if (!great_random_probability(NULL)) {
+		great_log(GREAT_LOG_DEFAULT, "stdlib:memory:malloc", NULL);
+		return great_c89.malloc(size);
 	}
 
-	/* P? ...or a pointer to the allocated space */
-	great_log(GREAT_LOG_DEFAULT, "stdio:memory:malloc", NULL);
-	return great_c89.malloc(size);
+	/* P? ...either a null pointer */
+	great_ib("stdlib:memory:malloc", "4.10.3.3 P?", "Returning NULL");
+	return NULL;
+
+	/* NOTREACHED */
+	return NULL;
 }
 
 /* C89 4.10.3.4 The realloc function */
@@ -87,10 +89,15 @@ realloc(void *ptr, size_t size)
 		return great_c89.realloc(ptr, size);
 	}
 
+	if (!great_random_probability(NULL)) {
+		great_log(GREAT_LOG_DEFAULT, "stdlib:memory:realloc", NULL);
+		return great_c89.realloc(ptr, size);
+	}
+
 	/* P? If ptr is a null pointer, the realloc function
 	 *    behaves like the malloc function for the specified size. */
 	if(ptr == NULL) {
-		great_ib("stdio:memory:realloc", "4.10.3.4 P?",
+		great_ib("stdlib:memory:realloc", "4.10.3.4 P?",
 			"Returning malloc()");
 		return malloc(size);
 	}
@@ -103,15 +110,13 @@ realloc(void *ptr, size_t size)
 		/* C89 does not enforce that NULL is returned (I think...) */
 		switch(great_random_choice(2)) {
 		case 0:
-			great_ib("stdio:memory:realloc", "4.10.3.4 P?",
+			great_ib("stdlib:memory:realloc", "4.10.3.4 P?",
 				"Returning NULL");
-
 			return NULL;
 
 		case 1:
-			great_ib("stdio:memory:realloc", "4.10.3.4 P?",
+			great_ib("stdlib:memory:realloc", "4.10.3.4 P?",
 				"Returning great_nothing");
-
 			return great_nothing + 1;
 
 		default:
@@ -121,20 +126,13 @@ realloc(void *ptr, size_t size)
 
 	/* P? The realloc function returns either a null pointer or a pointer to
 	 *    the possibly moved allocated space. */
-	switch(great_random_choice(3)) {
+	switch(great_random_choice(2)) {
 	case 0:
-		great_ib("stdio:memory:realloc", "4.10.3.4 P?",
+		great_ib("stdlib:memory:realloc", "4.10.3.4 P?",
 			"Returning NULL");
-
 		return NULL;
 
 	case 1:
-		great_log(GREAT_LOG_DEFAULT, "stdio:memory:realloc", NULL);
-
-		/* possibly the same address */
-		return great_c89.realloc(ptr, size);
-
-	case 2:
 		/* a different address */
 		{
 			void *p;
@@ -143,7 +141,7 @@ realloc(void *ptr, size_t size)
 			if(!p) {
 				great_perror("stdlib:memory:realloc", "malloc");
 
-				great_ib("stdio:memory:realloc", "4.10.3.4 P?",
+				great_ib("stdlib:memory:realloc", "4.10.3.4 P?",
 					"Returning NULL");
 
 				return NULL;
@@ -154,7 +152,7 @@ realloc(void *ptr, size_t size)
 			memcpy(p, ptr, size);
 			free(ptr);
 
-			great_ib("stdio:memory:realloc", "7.20.3.4 P2",
+			great_ib("stdlib:memory:realloc", "7.20.3.4 P2",
 				"Returning different address");
 
 			return p;

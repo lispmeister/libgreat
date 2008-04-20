@@ -96,7 +96,7 @@ xis(const char *subset, int (*fp)(int c), int c) {
 		return fp(c);
 	}
 
-	if (!great_random_bool(NULL)) {
+	if (!great_random_probability(NULL)) {
 		great_log(GREAT_LOG_DEFAULT, subset, NULL);
 		return fp(c);
 	}

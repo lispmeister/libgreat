@@ -51,29 +51,25 @@ rand(void)
 		return great_c99.rand();
 	}
 
-	/* P4 The rand function returns a pseudo-random integer */
 	/*
-	 * This wrapper has the extra caveat that our descision weather to fail or
-	 * not must also be repeatable by srand() (else the sequence would differ
+	 * This wrapper has the extra caveat that our descision of whether to fail
+	 * or not must also be repeatable by srand() (else the sequence would differ
 	 * given the same seed). Hence we make that descision part of the same
 	 * sequence we return, by simply using rand().
-	 *
 	 */
-	/* TODO duff */
-	if(!great_random_bool(&great_c99.random_rand)) {
-		/*
-		 * A constant is returned based on the premise that a sequence of
-		 * random numbers may repeat one number infinitely. Seven is one of
-		 * my favorite numbers.
-		 */
-		great_ib("stdlib:prng:rand", "7.20.2.1 P4", "Returning constant");
-		return 7;
+	if(!great_random_probability(&great_c99.random_rand)) {
+		great_log(GREAT_LOG_DEFAULT, "stdlib:prng:rand", NULL);
+		return great_c99.rand();
 	}
 
-	/* TODO duffing: invert this bool */
-
-	great_log(GREAT_LOG_DEFAULT, "stdlib:prng:rand", NULL);
-	return great_c99.rand();
+	/* P4 The rand function returns a pseudo-random integer */
+	/*
+	 * A constant is returned based on the premise that a sequence of
+	 * random numbers may repeat one number infinitely. Seven is one of
+	 * my favorite numbers.
+	 */
+	great_ib("stdlib:prng:rand", "7.20.2.1 P4", "Returning constant");
+	return 7;
 }
 
 /* C99 7.20.2.2 The srand function */

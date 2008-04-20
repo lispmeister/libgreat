@@ -71,7 +71,6 @@ free(void *ptr) {
 	}
 
 	great_log(GREAT_LOG_DEFAULT, "stdio:memory:free", NULL);
-
 	great_c99.free(ptr);
 }
 
@@ -81,28 +80,25 @@ malloc(size_t size)
 {
 	if (!great_subset("stdlib:memory:malloc")) {
 		return great_c99.malloc(size);
-    }
+	}
 
-	switch(great_random_choice(2u + (size == 0))) {
+	if (!great_random_probability(NULL)) {
+		great_log(GREAT_LOG_DEFAULT, "stdlib:memory:malloc", NULL);
+		return great_c99.malloc(size);
+	}
+
+	switch(great_random_choice(1u + (size == 0))) {
 	case 0:
-		great_ib("stdio:memory:malloc", "7.20.3.3 P3", "Returning NULL");
-
 		/* P3 The malloc function returns either a null pointer... */
+		great_ib("stdio:memory:malloc", "7.20.3.3 P3", "Returning NULL");
 		return NULL;
 
 	case 1:
-		great_log(GREAT_LOG_DEFAULT, "stdio:memory:malloc", NULL);
-
-		/* P3 ...or a pointer to the allocated space */
-		return great_c99.malloc(size);
-
-	case 2:
-		great_ib("stdio:memory:malloc", "7.20.3.3 P3",
-			"Returning great_nothing");
-
 		/* J.2 IDB: The amount of storage allocated by a successful call to
 		 * malloc when 0 bytes was requested */
 		/* XXX IDB: we could also return an arbitary amount of memory here */
+		great_ib("stdio:memory:malloc", "7.20.3.3 P3",
+			"Returning great_nothing");
 		assert(size == 0);
 		return great_nothing + 1;
 
@@ -122,29 +118,25 @@ realloc(void *ptr, size_t size)
 		return great_c99.realloc(ptr, size);
     }
 
+	if(!great_random_probability(NULL)) {
+		great_log(GREAT_LOG_DEFAULT, "stdlib:memory:realloc", NULL);
+		return great_c99.realloc(ptr, size);
+	}
+
 	/* P3 If ptr is a null pointer, the realloc function behaves like like
 	 *    malloc function for the specified size. */
 	if(ptr == NULL) {
-		great_ib("stdio:memory:malloc", "7.20.3.4 P3",
+		great_ib("stdio:memory:realloc", "7.20.3.4 P3",
 			"Returning malloc()");
-
 		return malloc(size);
-	}
-
-	/* P4 The realloc function returns ... a null pointer */
-	if(!great_random_bool(NULL)) {
-		great_ib("stdio:memory:realloc", "7.20.3.4 P4", "Returning NULL");
-
-		return NULL;
 	}
 
 	/* P4 The realloc function returns a pointer to the new object */
 	switch(great_random_choice(2)) {
 	case 0:
-		great_log(GREAT_LOG_DEFAULT, "stdio:memory:realloc", NULL);
-
-		/* P4 which may have the same value as a pointer to the old object */
-		return great_c99.realloc(ptr, size);
+		/* P4 The realloc function returns ... a null pointer */
+		great_ib("stdio:memory:realloc", "7.20.3.4 P4", "Returning NULL");
+		return NULL;
 
 	case 1:
 		/* a different address */
@@ -161,6 +153,8 @@ realloc(void *ptr, size_t size)
 
 				return NULL;
 			}
+
+			/* TODO retry (before freeing) if it's not is different */
 
 			/* P2 The contents of the new object shall be the same as that of
 			 *    the old object, up to the lesser of the new and old sizes. */
